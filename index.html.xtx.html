@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIDNIGHTSTORE | Catálogo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ESTILOS GENERALES --- */
+        body { 
+            font-family: 'Montserrat', sans-serif;
+            background-color: #050510;
+            color: #e0e0e0;
+            margin: 0; padding: 0;
+        }
+
+        /* --- MENÚ --- */
+        .menu-principal {
+            background-color: #000;
+            border-bottom: 2px solid #9d4edd;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .categorias a {
+            color: white;
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            transition: color 0.3s;
+        }
+        .categorias a:hover { color: #9d4edd; }
+
+        .redes a { color: white; margin-left: 15px; text-decoration: none; font-size: 1.2rem; }
+
+        /* --- LOGO Y TITULO --- */
+        .titulo-contenedor {
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 40px; gap: 20px; flex-wrap: wrap;
+        }
+        .logo-img {
+            width: 80px; height: 80px; border-radius: 50%;
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.6); object-fit: cover;
+        }
+        h1 { 
+            margin: 0; text-align: center; color: #ffffff; font-size: 2.5rem; 
+            letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 4px #000;
+        }
+
+        /* --- SECCIONES --- */
+        .titulo-seccion {
+            text-align: center; color: #9d4edd; margin-top: 60px; margin-bottom: 20px;
+            font-size: 1.8rem; text-transform: uppercase; border-bottom: 1px solid #333;
+            display: inline-block; padding-bottom: 5px;
+        }
+
+        /* --- GALERÍA --- */
+        .galeria {
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 30px; padding: 20px; max-width: 1200px; margin: 0 auto;
+        }
+
+        .producto-card {
+            background: #10101a; border: 1px solid #333; width: 250px;
+            text-align: center; transition: transform 0.3s; padding-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; flex-direction: column;
+        }
+        .producto-card:hover {
+            transform: translateY(-5px); border-color: #9d4edd;
+            box-shadow: 0 10px 20px rgba(157, 78, 221, 0.2);
+        }
+
+        .img-placeholder {
+            width: 100%; height: 250px; overflow: hidden; background-color: #000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .img-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+
+        .producto-info { padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
+        .producto-info h3 { margin: 10px 0; font-size: 1.1rem; color: #fff; min-height: 50px; }
+        .precio { color: #ffdd00; font-size: 1
