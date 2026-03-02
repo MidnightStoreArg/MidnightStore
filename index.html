@@ -4,255 +4,922 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIDNIGHTSTORE | Catálogo</title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Courier+New&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Courier+New&display=swap" rel="stylesheet">
     
     <style>
-        /* =========================================
-           1. RESET BÁSICO (Para evitar errores)
-           ========================================= */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body, html {
-            width: 100%; height: 100%;
-            font-family: 'Montserrat', sans-serif;
-            background-color: #f0eee9; /* FONDO BEIGE */
-            color: #2d2d2d;
-            overflow-x: hidden; /* Evita scroll lateral */
-        }
-
-        /* Bloqueo de scroll inicial */
-        body.locked { overflow: hidden; }
-
-        /* =========================================
-           2. PANTALLA DE INTRO (El "Vórtice")
-           ========================================= */
-        #intro-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background-color: #1f1f1f; /* GRIS OSCURO */
+        /* --- BARRA DE ANUNCIOS --- */
+        .barra-anuncios {
+            background: linear-gradient(90deg, #3c096c, #9d4edd, #3c096c);
+            color: #fff;
+            text-align: center;
+            padding: 10px 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 99999; /* SIEMPRE ENCIMA */
-            cursor: pointer;
+            gap: 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(157, 78, 221, 0.4);
         }
+        .barra-anuncios .separador {
+            color: #ffdd00;
+            font-size: 1.2rem;
+        }
+        /* --- ESTILOS GENERALES --- */
+        body { 
+            font-family: 'Montserrat', sans-serif; background-color: #050510;
+            color: #e0e0e0; margin: 0; padding: 0; overflow-x: hidden;
+        }
+        body.locked { overflow: hidden; }
 
+        /* --- INTRODUCCIÓN OVERLAY --- */
+        #intro-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #050510; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 99999;
+            cursor: pointer; user-select: none;
+        }
         .brand-intro {
-            font-family: 'Courier New', monospace;
-            font-size: 3rem; font-weight: 800; color: #fff;
-            letter-spacing: 5px; margin-bottom: 10px;
-            text-transform: uppercase;
-            text-align: center;
+            font-family: 'Courier New', monospace; font-size: 3rem; font-weight: 800;
+            color: #fff; letter-spacing: 5px; margin-bottom: 10px; text-transform: uppercase;
+            text-align: center; text-shadow: 0 0 10px #9d4edd;
         }
-
         .tagline-intro {
-            font-family: 'Courier New', monospace;
-            font-size: 1rem; color: #aaa;
-            letter-spacing: 2px;
-            border-top: 1px solid #666; padding-top: 10px;
+            font-family: 'Courier New', monospace; font-size: 1rem; color: #aaa;
+            letter-spacing: 2px; border-top: 1px solid #9d4edd; padding-top: 10px;
         }
-
         .click-hint {
-            margin-top: 40px; font-family: 'Courier New', monospace;
-            font-size: 0.8rem; color: #8a2be2;
-            animation: parpadeo 1.5s infinite;
+            margin-top: 40px; font-family: 'Courier New', monospace; font-size: 0.8rem;
+            color: #9d4edd; animation: parpadeo 1.5s infinite;
         }
-
-        /* Animación CSS */
-        .vortex-anim {
-            animation: vortexGo 1.5s cubic-bezier(0.7, 0, 0.3, 1) forwards;
-            pointer-events: none;
-        }
-
-        @keyframes vortexGo {
-            0% { transform: rotate(0deg) scale(1); opacity: 1; filter: blur(0); }
-            100% { transform: rotate(720deg) scale(0); opacity: 0; filter: blur(20px); }
-        }
-
+        .vortex-anim { animation: vortexGo 1.5s cubic-bezier(0.7, 0, 0.3, 1) forwards; pointer-events: none; }
+        @keyframes vortexGo { 0% { transform: rotate(0deg) scale(1); opacity: 1; filter: blur(0); } 100% { transform: rotate(720deg) scale(0); opacity: 0; filter: blur(20px); } }
         @keyframes parpadeo { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-        /* =========================================
-           3. TIENDA (Oculta al principio)
-           ========================================= */
-        #tienda-container {
-            display: none; /* NO EXISTE HASTA EL CLICK */
-            opacity: 0;
-            transition: opacity 1.5s ease;
-        }
+        #tienda-container { display: none; opacity: 0; transition: opacity 1.5s ease; }
 
-        /* Menú */
+        /* --- MENÚ --- */
         .menu-principal {
-            background-color: #222; padding: 15px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 100;
+            background-color: #000; border-bottom: 2px solid #9d4edd; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;
         }
-        .categorias a { color: #ddd; text-decoration: none; margin-right: 15px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
-        .redes a { color: white; font-size: 1.2rem; }
+        .categorias a { color: white; text-decoration: none; margin-right: 15px; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; transition: color 0.3s; }
+        .categorias a:hover { color: #9d4edd; }
+        .redes a, .icono-carrito { color: white; margin-left: 15px; text-decoration: none; font-size: 1.2rem; cursor: pointer; transition: color 0.3s; }
+        .redes a:hover, .icono-carrito:hover { color: #9d4edd; }
+        #cart-count { background: #9d4edd; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; vertical-align: top; margin-left: -5px; }
 
-        /* Cabecera */
-        .header-content { text-align: center; padding: 40px 20px; }
-        .logo-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        h1 { margin-top: 15px; font-size: 2rem; color: #111; letter-spacing: 2px; }
+        /* --- LOGO Y TITULO --- */
+        .titulo-contenedor { display: flex; align-items: center; justify-content: center; margin-top: 40px; gap: 20px; flex-wrap: wrap; }
+        .logo-img { width: 80px; height: 80px; border-radius: 50%; box-shadow: 0 0 15px rgba(157, 78, 221, 0.6); object-fit: cover; }
+        h1 { margin: 0; text-align: center; color: #ffffff; font-size: 2.5rem; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 4px #000; }
 
-        /* Títulos */
-        .section-title {
-            text-align: center; margin: 50px 0 30px;
-            font-size: 1.5rem; text-transform: uppercase; color: #111;
-            font-weight: 800; border-bottom: 2px solid #111;
-            display: inline-block;
+        /* --- SECCIONES --- */
+        .titulo-seccion { text-align: center; color: #9d4edd; margin-top: 60px; margin-bottom: 20px; font-size: 1.8rem; text-transform: uppercase; border-bottom: 1px solid #333; display: inline-block; padding-bottom: 5px; }
+        
+        /* NUEVO: ESTILO PARA SUBCATEGORÍAS DE ARTISTAS */
+        .sub-titulo-artista {
+            text-align: center;
+            color: #fff;
+            margin-top: 40px;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, transparent, rgba(157, 78, 221, 0.3), transparent);
+            padding: 10px 0;
+            border-radius: 5px;
         }
-        .center-div { text-align: center; }
 
-        /* Grid Productos */
-        .galeria {
-            display: flex; flex-wrap: wrap; justify-content: center;
-            gap: 25px; padding: 0 20px 50px; max-width: 1200px; margin: 0 auto;
+        /* --- GALERÍA MAIN --- */
+        .galeria { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .producto-card {
+            background: #10101a; border: 1px solid #333; width: 250px; text-align: center; transition: transform 0.3s; padding-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; flex-direction: column; cursor: pointer;
         }
-
-        /* Tarjeta */
-        .card {
-            background: white; border-radius: 5px; width: 260px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            overflow: hidden; display: flex; flex-direction: column;
-            transition: transform 0.3s;
+        .producto-card:hover { transform: translateY(-5px); border-color: #9d4edd; box-shadow: 0 10px 20px rgba(157, 78, 221, 0.2); }
+        .img-placeholder { width: 100%; height: 250px; overflow: hidden; background-color: #000; display: flex; align-items: center; justify-content: center; }
+        .img-placeholder img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .producto-card:hover .img-placeholder img { transform: scale(1.05); }
+        .producto-info { padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; pointer-events: none; }
+        .producto-info h3 { margin: 10px 0; font-size: 1.1rem; color: #fff; min-height: 50px; }
+        .precio { color: #ffdd00; font-size: 1.4rem; font-weight: bold; margin: 5px 0 15px 0; }
+        
+        .btn-ver { background-color: transparent; border: 1px solid #9d4edd; color: #9d4edd; padding: 8px 0; border-radius: 5px; font-weight: bold; text-transform: uppercase; margin-top: 10px; width: 100%; display: block; }
+        
+        /* --- VENTANA MODAL (DETALLE DE PRODUCTO) --- */
+        #modal-producto {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85);
+            display: none; justify-content: center; align-items: center; z-index: 3000; backdrop-filter: blur(5px);
         }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-
-        .img-box {
-            width: 100%; height: 250px; background: #ddd;
-            display: flex; align-items: center; justify-content: center;
-            color: #555;
+        .modal-contenido {
+            background: #10101a; border: 2px solid #9d4edd; border-radius: 10px; max-width: 850px; width: 90%;
+            display: flex; flex-direction: row; position: relative; overflow: hidden; box-shadow: 0 0 30px rgba(157,78,221,0.3);
+            max-height: 90vh; overflow-y: auto;
         }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        @media(max-width: 768px) { .modal-contenido { flex-direction: column; } }
+        .cerrar-modal { position: absolute; top: 10px; right: 15px; font-size: 2rem; color: #fff; cursor: pointer; z-index: 10; text-shadow: 0 2px 4px #000; }
+        
+        /* Modificaciones para Galería de Modal */
+        .modal-img-container { flex: 1; background: #000; display: flex; flex-direction: column; }
+        .modal-img-main-box { flex-grow: 1; display: flex; align-items: center; justify-content: center; min-height: 350px; }
+        .modal-img-main-box img { width: 100%; height: 100%; object-fit: cover; max-height: 450px; }
+        .modal-miniaturas { display: flex; gap: 10px; padding: 10px; background: #0a0a14; overflow-x: auto; justify-content: center; }
+        .modal-miniaturas img { width: 60px; height: 60px; object-fit: cover; cursor: pointer; border: 2px solid transparent; border-radius: 5px; opacity: 0.6; transition: all 0.3s; }
+        .modal-miniaturas img:hover, .modal-miniaturas img.activa { border-color: #9d4edd; opacity: 1; }
 
-        .info-box { padding: 15px; text-align: center; display: flex; flex-direction: column; flex-grow: 1; }
-        .info-box h3 { font-size: 1rem; margin: 10px 0; color: #333; min-height: 40px; }
-        .precio { font-size: 1.2rem; font-weight: bold; color: #000; margin-bottom: 10px; }
+        .modal-detalles { flex: 1; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
+        .modal-detalles h2 { color: #fff; margin-top: 0; }
+        .modal-detalles p.desc { color: #bbb; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; }
+        
+        .opciones-grid { display: flex; gap: 15px; margin-bottom: 20px; }
+        .selector-box { flex: 1; }
+        .selector-box label { display: block; color: #fff; font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; }
+        .selector-box select { width: 100%; padding: 10px; background: #000; color: #fff; border: 1px solid #555; border-radius: 5px; font-family: inherit; }
+        
+        /* Botones Modal */
+        .botones-modal-container { display: flex; flex-direction: column; gap: 10px; }
+        
+        .btn-agregar-modal {
+            background: #9d4edd; color: #fff; border: none; padding: 15px; border-radius: 5px; font-weight: bold; text-transform: uppercase; cursor: pointer; width: 100%; font-family: inherit; font-size: 1rem; transition: background 0.3s;
+        }
+        .btn-agregar-modal:hover { background: #7b2cbf; }
 
-        /* Botones */
-        .btn { display: block; padding: 10px; text-align: center; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 0.85rem; margin-top: 5px; text-transform: uppercase; }
-        .btn-black { background: #111; color: white; border: none; }
-        .btn-black:hover { background: #333; }
-        .btn-outline { background: transparent; border: 1px solid #999; color: #555; }
-        .btn-outline:hover { border-color: #25D366; color: #25D366; }
-        .btn-pedir { display: inline-block; background: #fff; color: #000; padding: 5px 20px; font-size: 0.8rem; font-weight: bold; text-decoration: none; border-radius: 3px; }
+        .btn-mp-directo {
+            background: #009ee3; color: #fff; border: none; padding: 15px; border-radius: 5px; font-weight: bold; text-transform: uppercase; cursor: pointer; width: 100%; font-family: inherit; font-size: 1rem; transition: background 0.3s; display: none;
+        }
+        .btn-mp-directo:hover { background: #007bbd; }
 
+        /* --- CARRITO SIDEBAR --- */
+        #carrito-sidebar {
+            position: fixed; top: 0; right: -350px; width: 320px; height: 100vh; background: #0a0a14; border-left: 2px solid #9d4edd;
+            z-index: 4000; padding: 20px; transition: right 0.4s ease; display: flex; flex-direction: column; color: white; box-sizing: border-box;
+        }
+        #carrito-sidebar.abierto { right: 0; }
+        .cerrar-carrito { text-align: right; cursor: pointer; font-size: 1.5rem; color: #9d4edd; margin-bottom: 20px; }
+        .carrito-items { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; border-bottom: 1px solid #333; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.9rem; background: #1a1a2e; padding: 10px; border-radius: 5px; }
+        .cart-item-info { flex-grow: 1; padding-right: 10px; }
+        .cart-item-title { font-weight: bold; color: #fff; margin-bottom: 5px; }
+        .cart-item-price { color: #ffdd00; font-size: 0.8rem; }
+        .btn-remover { background: none; border: none; color: #ff4444; cursor: pointer; font-size: 1.2rem; }
+        .carrito-total { font-size: 1.2rem; font-weight: bold; text-align: right; margin-bottom: 20px; }
+        
+        .btn-finalizar { background: #25D366; color: #000; border: none; padding: 15px; border-radius: 5px; font-weight: bold; text-transform: uppercase; cursor: pointer; width: 100%; font-family: inherit; transition: background 0.3s; margin-bottom: 10px; }
+        .btn-finalizar:hover { background: #1ebd5a; }
+        
     </style>
 </head>
 <body class="locked">
 
     <div id="intro-overlay">
-        <div class="brand-intro">MIDNIGTH</div>
-        <div class="tagline-intro">merch de fans para fans</div>
+        <div class="brand-intro">MIDNIGHT</div>
+        <div class="tagline-intro">Merch De Fans Para Fans</div>
         <div class="click-hint">[ CLICK PARA ENTRAR ]</div>
     </div>
 
     <div id="tienda-container">
+        <div class="barra-anuncios">
+            <span>⏱️ Tiempo de elaboración: 5 a 7 días hábiles</span>
+            <span class="separador">•</span>
+            <span>🎪 Pedidos Lollapalooza hasta el 10/03</span>
+        </div>
         
         <nav class="menu-principal">
             <div class="categorias">
-                <a href="#promos" style="color: ;">★ PROMOS</a>
+                <a href="#promos" style="color: #ffdd00;">★ PROMOS</a>
                 <a href="#remeras">Remeras</a>
-                <a href="#tazas">Tazas</a>
-                <a href="#totebag">Tote Bags</a>
             </div>
             <div class="redes">
                 <a href="https://instagram.com/midnightstore.ar" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a class="icono-carrito" onclick="toggleCarrito()"><i class="fas fa-shopping-cart"></i><span id="cart-count">0</span></a>
             </div>
         </nav>
-
-        <div class="header-content">
-            <img src="Logo midnigth.png.png" alt="Logo" class="logo-img">
+        
+        <div class="titulo-contenedor">
+            <img src="Logo midnigth.png.png" alt="Logo Midnight" class="logo-img" onerror="this.src='https://via.placeholder.com/80?text=Logo'">
             <h1>MIDNIGHTSTORE</h1>
         </div>
 
-        <div class="center-div"><div class="section-title" id="promos">🔥 Promos</div></div>
+        <center><h2 id="promos" class="titulo-seccion">🔥 Productos Destacados</h2></center>
         <div class="galeria">
-            <div class="card">
-                <div class="img-box"><img src="Promos/promo1.jpg" alt="Promo"></div>
-                <div class="info-box">
-                    <h3>Combo Fan</h3>
-                    <p class="precio">$25.000</p>
-                    <a href="#" class="btn btn-black">Pedir</a>
+            <div class="producto-card" onclick="abrirProducto(this)" 
+                 data-nombre="Sabrina Argentina" 
+                 data-precio="28000"
+                 data-img="Remeras/Sabrina/Sabrina%20x%20Loolapalooza%20Azul.png, Remeras/Sabrina/Sabrina%20x%20Loolapalooza.png"
+                 data-desc="Remera edición especial Sabrina Carpenter Lollapalooza 2026."
+                 data-talles="S,M,L,XL,XXL"
+                 data-colores="Azul, Rojo"
+                 data-linkmp="https://mpago.li/1fNpW2n">
+                <div class="img-placeholder"><img src="Remeras/Sabrina/Sabrina%20x%20Loolapalooza%20Azul.png" onerror="this.src='https://via.placeholder.com/250x250/0000FF/FFF?text=Sabrina+Azul'"></div>
+                <div class="producto-info">
+                    <h3>Sabrina Argentina</h3>
+                    <p class="precio">$28.000</p>
+                    <span class="btn-ver">Ver Producto</span>
                 </div>
             </div>
         </div>
 
-        <div class="center-div"><div class="section-title" id="remeras">Remeras</div></div>
-        <div class="galeria">
-            <div class="card">
-                <div class="img-box"><img src="Remeras/LALI 1.jpg.png" alt="Lali"></div>
-                <div class="info-box">
-                    <h3>Who The F*** is Lali?</h3>
-                    <p class="precio">$20.000</p>
-                    <a href="link.mercadopago.com.ar/articulomidnight" class="btn btn-black">Comprar</a>
-                    <a href="#" class="btn btn-outline">Dudas</a>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-box"><img src="Remeras/nuncafui.jpg.png" alt="Nunca Fui"></div>
-                <div class="info-box">
-                    <h3>Nunca Fui Lo Que Querían</h3>
-                    <p class="precio">$25.000</p>
-                    <a href="#" class="btn btn-black">Comprar</a>
-                    <a href="#" class="btn btn-outline">Dudas</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="center-div"><div class="section-title" id="tazas">Tazas</div></div>
-        <div class="galeria">
-            <div class="card">
-                <div class="img-box"><img src="Tazas/TazaLouis.jpg.png" alt="Louis"></div>
-                <div class="info-box">
-                    <h3>Taza Louis</h3>
-                    <p class="precio">$8.000</p>
-                    <a href="#" class="btn btn-black">Comprar</a>
-                    <a href="#" class="btn btn-outline">Dudas</a>
-                </div>
-            </div>
-        </div>
+        <center><h2 id="remeras" class="titulo-seccion">Remeras</h2></center>
         
-        <br><br>
+        <h3 class="sub-titulo-artista">TAYLOR SWIFT</h3>
+        <div class="galeria">
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Reputation Over" 
+                 data-precio="24000" 
+                 data-img="Remeras/TAYLOR/REPUTATION_OVER.png,Remeras/TAYLOR/REPUTATION_OVER_BLANCA.png"
+                 data-desc="Remera Oversize de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL"
+                 data-colores=""
+                 data-linkmp="https://mpago.la/143NFRS">
+                <div class="img-placeholder"><img src="Remeras/TAYLOR/REPUTATION_OVER.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=Lali+Negra'"></div>
+                <div class="producto-info">
+                    <h3>Reputation Over</h3>
+                    <p class="precio">$24.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="I Love Taylor Swift" 
+                 data-precio="18000" 
+                 data-img="Remeras/TAYLOR/Taylor_I_Love.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL"
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/TAYLOR/Taylor_I_Love.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=Nunca+Fui'"></div>
+                <div class="producto-info">
+                    <h3>I Love Taylor Swift</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+             <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Karma Is a Cat" 
+                 data-precio="18000" 
+                 data-img="Remeras/TAYLOR/Taylor_Karma_Is_a_Cat.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL"
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/TAYLOR/Taylor_Karma_Is_a_Cat.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=Nunca+Fui'"></div>
+                <div class="producto-info">
+                    <h3>Karma Is a Cat</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+             <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Taylor Showgirl" 
+                 data-precio="18000" 
+                 data-img="Remeras/TAYLOR/Taylor_Showgirl.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL"
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/TAYLOR/Taylor_Showgirl.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=Nunca+Fui'"></div>
+                <div class="producto-info">
+                    <h3>Taylor Showgirl</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+             <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Taylor Swiftie" 
+                 data-precio="18000" 
+                 data-img="Remeras/TAYLOR/Taylor_Swiftie.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL"
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/TAYLOR/Taylor_Swiftie.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=Nunca+Fui'"></div>
+                <div class="producto-info">
+                    <h3>Taylor Swiftie</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+             <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Showgirl 2"
+                 data-precio="18000" 
+                 data-img="Remeras/TAYLOR/Taylor_The_Life_Of_A_Showgirl_2.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL"
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/TAYLOR/Taylor_The_Life_Of_A_Showgirl_2.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=Nunca+Fui'"></div>
+                <div class="producto-info">
+                    <h3>Showgirl </h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+             <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Taylor Version" 
+                 data-precio="18000" 
+                 data-img="Remeras/TAYLOR/Taylor_version.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL"
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/TAYLOR/Taylor_version.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=Nunca+Fui'"></div>
+                <div class="producto-info">
+                    <h3>Taylor Version</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="sub-titulo-artista">HARRY STYLES🪩</h3>
+        <div class="galeria">
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Harry Styles" 
+                 data-precio="18000" 
+                 data-img="Remeras/HARRY%20STYLES/CLOCK%20BABY%20TEE.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/HARRY%20STYLES/CLOCK%20BABY%20TEE.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=FOTO'"></div>
+                <div class="producto-info">
+                    <h3>Harry Styles Baby tee</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="I Love Harry Styles" 
+                 data-precio="18000" 
+                 data-img="Remeras/HARRY%20STYLES/Harry%20I%20Love%20BABY%20TEE.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/HARRY%20STYLES/Harry%20I%20Love%20BABY%20TEE.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=FOTO+1'"></div>
+                <div class="producto-info">
+                    <h3>I Love Harry Styles</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Harry Styles Me" 
+                 data-precio="18000" 
+                 data-img="Remeras/HARRY%20STYLES/Harry%20ME%20BABY%20TEE.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/HARRY%20STYLES/Harry%20ME%20BABY%20TEE.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=FOTO+2'"></div>
+                <div class="producto-info">
+                    <h3>Harry Styles Me Baby Tee</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Harry Styles Mirrorball" 
+                 data-precio="18000" 
+                 data-img="Remeras/HARRY%20STYLES/Harry%20Mirrorball%20BABY%20TEE.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/HARRY%20STYLES/Harry%20Mirrorball%20BABY%20TEE.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=FOTO+3'"></div>
+                <div class="producto-info">
+                    <h3>Harry Styles Mirrorball Baby Tee</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Harry Styles Occasionally" 
+                 data-precio="18000" 
+                 data-img="Remeras/HARRY%20STYLES/HARRY.%20OCCASIONALLY%20BABY%20TEE.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/HARRY%20STYLES/HARRY.%20OCCASIONALLY%20BABY%20TEE.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=FOTO+4'"></div>
+                <div class="producto-info">
+                    <h3>Harry Styles Occasionally Baby Tee</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Harry Styles Kiss All The Time" 
+                 data-precio="18000" 
+                 data-img="Remeras/HARRY%20STYLES/KISS%20ALL%20THE%20TIME%20BABY%20TEE%20AZUL.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/HARRY%20STYLES/KISS%20ALL%20THE%20TIME%20BABY%20TEE%20AZUL.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=FOTO+5'"></div>
+                <div class="producto-info">
+                    <h3>Harry Styles Kiss All The Time Baby Tee</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Harry Styles Star" 
+                 data-precio="18000" 
+                 data-img="Remeras/HARRY%20STYLES/STAR%20BABY%20TEE.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/HARRY%20STYLES/STAR%20BABY%20TEE.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=FOTO+6'"></div>
+                <div class="producto-info">
+                    <h3>Harry Styles Star Baby Tee</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Mirrorball Over" 
+                 data-precio="24000" 
+                 data-img="Remeras/HARRY%20STYLES/MIRRORBALL%20OVER.png"
+                 data-desc="Remera overzize de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.la/143NFRS">
+                <div class="img-placeholder"><img src="Remeras/HARRY%20STYLES/MIRRORBALL%20OVER.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=FOTO+7'"></div>
+                <div class="producto-info">
+                    <h3>Harry Styles Mirrorball Over</h3>
+                    <p class="precio">$24.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+            
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Harry Over" 
+                 data-precio="24000" 
+                 data-img="Remeras/HARRY%20STYLES/HARRY%20OVER.png"
+                 data-desc="Remera overzize de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.la/143NFRS">
+                <div class="img-placeholder"><img src="Remeras/HARRY%20STYLES/HARRY%20OVER.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=FOTO+7'"></div>
+                <div class="producto-info">
+                    <h3>Harry Styles Harry Over</h3>
+                    <p class="precio">$24.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="sub-titulo-artista">SABRINA CARPENTER🫦</h3>
+        <div class="galeria">
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Sabrina , Hey Men!" 
+                 data-precio="18000" 
+                 data-img="Remeras/Sabrina/Sabrina%20,%20Hey%20Men!.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/Sabrina/Sabrina%20,%20Hey%20Men!.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=FOTO+7'"></div>
+                <div class="producto-info">
+                    <h3>Sabrina , Hey Men!</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+            
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Sabrina . Jesus" 
+                 data-precio="18000" 
+                 data-img="Remeras/Sabrina/Sabrina%20.%20Jesus.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores="Negro, Blanco"
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/Sabrina/Sabrina%20.%20Jesus.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=FOTO+7'"></div>
+                <div class="producto-info">
+                    <h3>Sabrina . Jesus</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Sabrina , Jesus N" 
+                 data-precio="18000" 
+                 data-img="Remeras/Sabrina/Sabrina%20,%20Jesus%20N.png"
+                 data-desc="Descripción de la remera."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/Sabrina/Sabrina%20,%20Jesus%20N.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=SABRINA+1'"></div>
+                <div class="producto-info">
+                    <h3>Sabrina , Jesus N</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Sabrina . Man's Best Friend" 
+                 data-precio="18000" 
+                 data-img="Remeras/Sabrina/Sabrina%20.%20Man's%20Best%20Friend.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/Sabrina/Sabrina%20.%20Man's%20Best%20Friend.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=SABRINA+2'"></div>
+                <div class="producto-info">
+                    <h3>Sabrina . Man's Best Friend</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Sabrina . Manchild" 
+                 data-precio="18000" 
+                 data-img="Remeras/Sabrina/Sabrina%20.%20Manchild.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/Sabrina/Sabrina%20.%20Manchild.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=SABRINA+3'"></div>
+                <div class="producto-info">
+                    <h3>Sabrina . Manchild</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+        <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="Sabrina . Espresso" 
+                 data-precio="18000" 
+                 data-img="Remeras/Sabrina/Sabrina_Espresso.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/Sabrina/Sabrina_Espresso.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=SABRINA+2'"></div>
+                <div class="producto-info">
+                    <h3>Sabrina . Espresso</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <h3 class="sub-titulo-artista">CHAPPELL ROAN</h3>
+        <div class="galeria">
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="CHAPPELL ROAN BABY TEE ROSA BEBE" 
+                 data-precio="18000" 
+                 data-img="Remeras/CHAPPELLROAN/CHAPPEL_BABe_TEE_ROSA_BEBE.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/CHAPPELLROAN/CHAPPEL_BABe_TEE_ROSA_BEBE.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=ARTISTA+1'"></div>
+                <div class="producto-info">
+                    <h3>CHAPPELL ROAN BABY TEE ROSA BEBE</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="CHAPPELL ROAN BABY TEE ROSA FUERTE" 
+                 data-precio="18000" 
+                 data-img="Remeras/CHAPPELLROAN/CHAPPEL_BABY_TEE_ROSA_FUERTE.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/CHAPPELLROAN/CHAPPEL_BABY_TEE_ROSA_FUERTE.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=ARTISTA+2'"></div>
+                <div class="producto-info">
+                    <h3>CHAPPELL ROAN BABY TEE ROSA FUERTE</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="CHAPPELL ROAN FEMININOMENON BABY TEE" 
+                 data-precio="18000" 
+                 data-img="Remeras/CHAPPELLROAN/FEMININOMENON_BABY_TEE.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/CHAPPELLROAN/FEMININOMENON_BABY_TEE.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=ARTISTA+3'"></div>
+                <div class="producto-info">
+                    <h3>FEMININOMENON BABY TEE</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="CHAPPELL ROAN HOT GO TO BABY TEE" 
+                 data-precio="18000" 
+                 data-img="Remeras/CHAPPELLROAN/HOT_GO_TO_BABY_TEE.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/CHAPPELLROAN/HOT_GO_TO_BABY_TEE.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=ARTISTA+4'"></div>
+                <div class="producto-info">
+                    <h3>HOT GO TO BABY TEE</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="CHAPPELL ROAN LETS GO BABY TEE" 
+                 data-precio="18000" 
+                 data-img="Remeras/CHAPPELLROAN/LETS_GO_BABY_TEE.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.la/1jb83pb">
+            <div class="img-placeholder"><img src="Remeras/CHAPPELLROAN/LETS_GO_BABY_TEE.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=ARTISTA+5'"></div>
+                <div class="producto-info">
+                    <h3>LETS GO BABY TEE</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+
+            <div class="producto-card" onclick="abrirProducto(this)"
+                 data-nombre="PINK PONY CLUB BABYTEE" 
+                 data-precio="18000" 
+                 data-img="Remeras/CHAPPELLROAN/PINK_PONY_CLUB_BABY_TEE.png"
+                 data-desc="Remera baby tee de algodon peinado 24.1."
+                 data-talles="S,M,L,XL,XXL" 
+                 data-colores=""
+                 data-linkmp="https://mpago.li/1GFeFw5">
+                <div class="img-placeholder"><img src="Remeras/CHAPPELLROAN/PINK_PONY_CLUB_BABY_TEE.png" onerror="this.src='https://via.placeholder.com/250x250/111/FFF?text=ARTISTA+5'"></div>
+                <div class="producto-info">
+                    <h3>PINK PONY CLUB BABY TEE</h3>
+                    <p class="precio">$18.000</p>
+                    <span class="btn-ver">Ver Producto</span>
+                </div>
+            </div>
+        </div>
+
+        <br><br><br>
+    </div>
+
+    <div id="modal-producto">
+        <div class="modal-contenido">
+            <span class="cerrar-modal" onclick="cerrarModal()">&times;</span>
+            <div class="modal-img-container">
+                <div class="modal-img-main-box">
+                    <img id="modal-img-main" src="" alt="Producto">
+                </div>
+                <div class="modal-miniaturas" id="modal-miniaturas-container"></div>
+            </div>
+            <div class="modal-detalles">
+                <h2 id="modal-titulo">Nombre del Producto</h2>
+                <p class="precio" id="modal-precio">$0</p>
+                <p class="desc" id="modal-desc">Descripción del producto va aquí.</p>
+                
+                <div class="opciones-grid">
+                    <div class="selector-box" id="contenedor-talles" style="display: none;">
+                        <label for="modal-select-talle">Talle:</label>
+                        <select id="modal-select-talle"></select>
+                    </div>
+                    <div class="selector-box" id="contenedor-colores" style="display: none;">
+                        <label for="modal-select-color">Color:</label>
+                        <select id="modal-select-color"></select>
+                    </div>
+                </div>
+
+                <div class="botones-modal-container">
+                    <button class="btn-agregar-modal" id="btn-modal-agregar"><i class="fas fa-cart-plus"></i> Agregar al Carrito</button>
+                    <button class="btn-mp-directo" id="btn-mp-directo"><i class="fas fa-credit-card"></i> Comprar (Mercado Pago)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="carrito-sidebar">
+        <div class="cerrar-carrito" onclick="toggleCarrito()"><i class="fas fa-times"></i></div>
+        <h2 style="margin-top: 0; text-align: center; color: #9d4edd;">Tu Pedido</h2>
+        <div class="carrito-items" id="carrito-items"></div>
+        <div class="carrito-total">Total: $<span id="total-precio">0</span></div>
+        
+        <button class="btn-finalizar" onclick="enviarPedido()"><i class="fab fa-whatsapp"></i> Mandar Pedido por WhatsApp</button>
+        <p class="aviso-mp" style="font-size: 0.8rem; color: #aaa; text-align: center; margin-top: 10px;">Enviá tu pedido por WhatsApp para coordinar el pago (transferencia/efectivo) o pago de múltiples productos.</p>
     </div>
 
     <script>
-        // Esperamos a que todo cargue
-        window.addEventListener('load', () => {
+        /* --- LÓGICA DEL OVERLAY --- */
+        document.addEventListener('DOMContentLoaded', () => {
             const overlay = document.getElementById('intro-overlay');
             const tienda = document.getElementById('tienda-container');
             const body = document.body;
 
-            // Función de arranque
-            function entrar() {
-                // 1. Activar animación de salida del overlay
+            function activarSitio() {
                 overlay.classList.add('vortex-anim');
+                setTimeout(() => { tienda.style.display = 'block'; requestAnimationFrame(() => { tienda.style.opacity = '1'; }); }, 800);
+                setTimeout(() => { overlay.style.display = 'none'; body.classList.remove('locked'); }, 1500);
+            }
+            overlay.addEventListener('click', activarSitio);
+            window.addEventListener('keydown', (e) => { if(e.key === 'Enter') activarSitio(); });
+        });
 
-                // 2. Preparamos la tienda
-                setTimeout(() => {
-                    tienda.style.display = 'block'; // Aparece en el DOM
-                    // Pequeño truco para el fade-in
-                    setTimeout(() => { tienda.style.opacity = '1'; }, 50);
-                }, 800);
+        /* --- LÓGICA DEL MODAL DE PRODUCTOS --- */
+        let productoActual = null;
+        let linkMPActual = "";
 
-                // 3. Limpiamos todo al terminar
-                setTimeout(() => {
-                    overlay.style.display = 'none'; // Adiós overlay
-                    body.classList.remove('locked'); // Hola scroll
-                    body.style.overflow = 'auto'; 
-                }, 1500);
+        function abrirProducto(elementoCard) {
+            const nombre = elementoCard.getAttribute('data-nombre');
+            const precio = elementoCard.getAttribute('data-precio');
+            const imgData = elementoCard.getAttribute('data-img');
+            const desc = elementoCard.getAttribute('data-desc');
+            const talles = elementoCard.getAttribute('data-talles');
+            const colores = elementoCard.getAttribute('data-colores');
+            linkMPActual = elementoCard.getAttribute('data-linkmp');
+
+            productoActual = { nombre, precio: parseInt(precio) };
+
+            document.getElementById('modal-titulo').innerText = nombre;
+            document.getElementById('modal-precio').innerText = "$" + parseInt(precio).toLocaleString('es-AR');
+            document.getElementById('modal-desc').innerText = desc;
+            
+            // Lógica de Imágenes Múltiples
+            const imgs = imgData.split(',');
+            const mainImg = document.getElementById('modal-img-main');
+            const miniContainer = document.getElementById('modal-miniaturas-container');
+            
+            mainImg.src = imgs[0].trim();
+            mainImg.onerror = () => { mainImg.src = 'https://via.placeholder.com/500x500/111/FFF?text=Sin+Imagen' };
+            
+            miniContainer.innerHTML = '';
+            if(imgs.length > 1) {
+                imgs.forEach((imgSrc, index) => {
+                    const limpia = imgSrc.trim();
+                    const claseActiva = index === 0 ? 'activa' : '';
+                    miniContainer.innerHTML += `<img src="${limpia}" class="${claseActiva}" onclick="cambiarImagenPrincipal(this, '${limpia}')" onerror="this.src='https://via.placeholder.com/60x60/111/FFF?text=X'">`;
+                });
             }
 
-            // Click o Enter para entrar
-            overlay.addEventListener('click', entrar);
-            window.addEventListener('keydown', (e) => {
-                if(e.key === 'Enter') entrar();
-            });
+            // Selectores
+            const contenedorTalles = document.getElementById('contenedor-talles');
+            const selectTalle = document.getElementById('modal-select-talle');
+            if (talles && talles.trim() !== "") {
+                const listaTalles = talles.split(',');
+                selectTalle.innerHTML = ''; 
+                listaTalles.forEach(talle => { selectTalle.innerHTML += `<option value="${talle.trim()}">${talle.trim()}</option>`; });
+                contenedorTalles.style.display = 'block';
+            } else { contenedorTalles.style.display = 'none'; selectTalle.innerHTML = ''; }
+
+            const contenedorColores = document.getElementById('contenedor-colores');
+            const selectColor = document.getElementById('modal-select-color');
+            if (colores && colores.trim() !== "") {
+                const listaColores = colores.split(',');
+                selectColor.innerHTML = ''; 
+                listaColores.forEach(color => { selectColor.innerHTML += `<option value="${color.trim()}">${color.trim()}</option>`; });
+                contenedorColores.style.display = 'block';
+            } else { contenedorColores.style.display = 'none'; selectColor.innerHTML = ''; }
+
+            // Lógica del Botón Mercado Pago Individual
+            const btnMP = document.getElementById('btn-mp-directo');
+            if (linkMPActual && linkMPActual.trim() !== "") {
+                btnMP.style.display = 'block';
+            } else {
+                btnMP.style.display = 'none';
+            }
+
+            document.getElementById('modal-producto').style.display = 'flex';
+        }
+
+        function cambiarImagenPrincipal(elementoMiniatura, src) {
+            document.getElementById('modal-img-main').src = src;
+            document.querySelectorAll('.modal-miniaturas img').forEach(img => img.classList.remove('activa'));
+            elementoMiniatura.classList.add('activa');
+        }
+
+        function cerrarModal() { document.getElementById('modal-producto').style.display = 'none'; }
+        window.onclick = function(event) { if (event.target == document.getElementById('modal-producto')) { cerrarModal(); } }
+
+    /* --- LÓGICA DE COMPRA DIRECTA MP --- */
+        document.getElementById('btn-mp-directo').addEventListener('click', () => {
+            if (!productoActual || !linkMPActual) return;
+            
+            const selectTalle = document.getElementById('modal-select-talle');
+            const selectColor = document.getElementById('modal-select-color');
+            
+            let detallesExtras = [];
+            if (document.getElementById('contenedor-talles').style.display !== 'none' && selectTalle.value) {
+                detallesExtras.push(`Talle: ${selectTalle.value}`);
+            }
+            if (document.getElementById('contenedor-colores').style.display !== 'none' && selectColor.value) {
+                detallesExtras.push(`Color: ${selectColor.value}`);
+            }
+
+            let mensaje = `Hola MIDNIGHTSTORE! 🌙 Acabo de pagar por Mercado Pago:%0A%0A- 1x ${productoActual.nombre}`;
+            if(detallesExtras.length > 0) {
+                mensaje += ` (${detallesExtras.join(', ')})`;
+            }
+            mensaje += `%0A%0ATe paso el comprobante.%0A%0A📍 *Mi Ciudad/Código Postal es: _______*%0A(Para coordinar el envío)`;
+
+            // EL TRUCO PARA EVITAR EL BLOQUEO DEL NAVEGADOR
+            let urlWhatsApp = `https://wa.me/3412274035?text=${mensaje}`;
+            
+            // 1. Abre Mercado Pago en una pestaña nueva
+            window.open(linkMPActual, '_blank'); 
+            
+            // 2. Transforma la pestaña actual de la tienda en el chat de WhatsApp
+            window.location.href = urlWhatsApp; 
         });
+
+        /* --- LÓGICA DEL CARRITO --- */
+        let carrito = [];
+        function toggleCarrito() { document.getElementById('carrito-sidebar').classList.toggle('abierto'); }
+
+        document.getElementById('btn-modal-agregar').addEventListener('click', () => {
+            if (!productoActual) return;
+
+            const selectTalle = document.getElementById('modal-select-talle');
+            const selectColor = document.getElementById('modal-select-color');
+            
+            let nombreAnotado = productoActual.nombre;
+            let extras = [];
+            
+            if (document.getElementById('contenedor-talles').style.display !== 'none' && selectTalle.value) extras.push(`Talle: ${selectTalle.value}`);
+            if (document.getElementById('contenedor-colores').style.display !== 'none' && selectColor.value) extras.push(`Color: ${selectColor.value}`);
+            
+            if(extras.length > 0) {
+                nombreAnotado += ` (${extras.join(', ')})`;
+            }
+
+            const index = carrito.findIndex(item => item.nombre === nombreAnotado);
+            if (index > -1) { carrito[index].cantidad += 1; } 
+            else { carrito.push({ nombre: nombreAnotado, precio: productoActual.precio, cantidad: 1 }); }
+            
+            actualizarCarrito(); cerrarModal(); toggleCarrito(); 
+        });
+
+        function actualizarCarrito() {
+            const contenedor = document.getElementById('carrito-items');
+            const contador = document.getElementById('cart-count');
+            const totalElement = document.getElementById('total-precio');
+            
+            contenedor.innerHTML = ''; let total = 0; let cantidadTotal = 0;
+
+            carrito.forEach((item, index) => {
+                total += item.precio * item.cantidad; cantidadTotal += item.cantidad;
+                contenedor.innerHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">${item.cantidad}x ${item.nombre}</div>
+                            <div class="cart-item-price">$${(item.precio * item.cantidad).toLocaleString('es-AR')}</div>
+                        </div>
+                        <button class="btn-remover" onclick="removerItem(${index})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+            });
+            contador.innerText = cantidadTotal; totalElement.innerText = total.toLocaleString('es-AR');
+        }
+
+        function removerItem(index) { carrito.splice(index, 1); actualizarCarrito(); }
+
+    function enviarPedido() {
+            if (carrito.length === 0) { alert("El carrito está vacío."); return; }
+
+            let mensaje = "Hola MIDNIGHTSTORE! 🌙 Quiero hacer el siguiente pedido:%0A%0A";
+            let total = 0;
+
+            carrito.forEach(item => {
+                mensaje += `- ${item.cantidad}x ${item.nombre} ($${(item.precio * item.cantidad).toLocaleString('es-AR')})%0A`;
+                total += item.precio * item.cantidad;
+            });
+
+            mensaje += `%0A*Total: $${total.toLocaleString('es-AR')}*%0A%0A📍 *Mi Ciudad/Código Postal es: _______*%0A(Para coordinar el envío)%0A%0A¿Me pasas los datos para coordinar el pago?`;
+
+            const numeroWhatsApp = "3412274035";
+            window.open(`https://wa.me/${numeroWhatsApp}?text=${mensaje}`, '_blank');
+        }
     </script>
 </body>
 </html>
