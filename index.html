@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Courier+New&display=swap" rel="stylesheet">
     
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          // Reemplazar con la Public Key que te da EmailJS
+          emailjs.init("TuJhHuiphaLKf2y39");
+       })();
+    </script>
     <style>
         /* --- CONFIGURACIÓN GLOBAL --- */
         html { scroll-behavior: smooth; }
@@ -150,7 +157,7 @@
         <div class="barra-anuncios">
             <span>⏱️ Tiempo de elaboración: 5 a 7 días hábiles</span>
             <span class="separador">•</span>
-            <span>🎪 Pedidos Lollapalooza hasta el 10/03</span>
+            <span>🎪 Merch de fans para fans </span>
         </div>
         
         <nav class="menu-principal">
@@ -161,6 +168,7 @@
                 <a href="#promos" style="color: #ffdd00;">★ PROMOS</a>
                 <a href="#remeras">Remeras</a>
                 <a href="#vasos">Vasos</a>
+                <a href="#ToteBag">Tote Bag</a>
             </div>
             <div class="redes">
                 <a href="https://instagram.com/midnightstore.ar" target="_blank"><i class="fab fa-instagram"></i></a>
@@ -176,11 +184,11 @@
         <center><h2 id="promos" class="titulo-seccion">🔥 Productos Destacados</h2></center>
         <div class="galeria">
             <div class="producto-card" onclick="abrirProducto(this)" 
-                  data-nombre="Sabrina Argentina" data-precio="28000"
-                  data-img="Remeras/Sabrina/Sabrina%20x%20Loolapalooza%20Azul.png, Remeras/Sabrina/Sabrina%20x%20Loolapalooza.png"
-                  data-desc="Remera edición especial Sabrina Carpenter Lollapalooza 2026."
-                  data-talles="S,M,L,XL,XXL" data-colores="Azul, Rojo"
-                  data-linkmp="https://mpago.li/1fNpW2n">
+                 data-nombre="Sabrina Argentina" data-precio="28000"
+                 data-img="Remeras/Sabrina/Sabrina%20x%20Loolapalooza%20Azul.png, Remeras/Sabrina/Sabrina%20x%20Loolapalooza.png"
+                 data-desc="Remera edición especial Sabrina Carpenter Lollapalooza 2026."
+                 data-talles="S,M,L,XL,XXL" data-colores="Azul, Rojo"
+                 data-linkmp="https://mpago.li/1fNpW2n">
                 <div class="img-placeholder"><img src="Remeras/Sabrina/Sabrina%20x%20Loolapalooza%20Azul.png"></div>
                 <div class="producto-info">
                     <h3>Sabrina Argentina</h3>
@@ -241,6 +249,37 @@
         <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Faith In The Future" data-precio="18000" data-img="Remeras/LOUIS TOMLINSON/Louis_Faith_in_the_Future.png" data-desc="Remera baby tee de algodon peinado 24.1." data-talles="S,M,L,XL,XXL" data-colores="" data-linkmp="https://mpago.li/1GFeFw5"><div class="img-placeholder"><img src="Remeras/LOUIS TOMLINSON/Louis_Faith_in_the_Future.png"></div><div class="producto-info"><h3>Faith In The Future</h3><p class="precio">$18.000</p><span class="btn-ver">Ver Producto</span></div></div>
         <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Faith In The Future Over" data-precio="24000" data-img="Remeras/LOUIS TOMLINSON/FAITH_IN_THE_FUTURE_OVER.png" data-desc="Remera overzise de algodon peinado 24.1." data-talles="S,M,L,XL,XXL" data-colores="" data-linkmp="https://mpago.la/143NFRS"><div class="img-placeholder"><img src="Remeras/LOUIS TOMLINSON/FAITH_IN_THE_FUTURE_OVER.png"></div><div class="producto-info"><h3>Faith In The Future Over</h3><p class="precio">$24.000</p><span class="btn-ver">Ver Producto</span></div></div>
         <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Little Taste Over" data-precio="24000" data-img="Remeras/LOUIS TOMLINSON/LITTLE_TASTE_OVER.png" data-desc="Remera overzise de algodon peinado 24.1." data-talles="S,M,L,XL,XXL" data-colores="" data-linkmp="https://mpago.la/143NFRS"><div class="img-placeholder"><img src="Remeras/LOUIS TOMLINSON/LITTLE_TASTE_OVER.png"></div><div class="producto-info"><h3>Little Taste Over</h3><p class="precio">$24.000</p><span class="btn-ver">Ver Producto</span></div></div>
+        </div>
+
+        <center><h2 id="ToteBag" class="titulo-seccion">Tote Bags</h2></center>
+        <h3 class="sub-titulo-artista">Tote Bags</h3>
+        <div class="galeria">
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag 4 Ever" data-precio="10000" data-img="ToteBag/4ever.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/4ever.png"></div><div class="producto-info"><h3>Tote Bag 4 ever</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Chappell" data-precio="10000" data-img="ToteBag/chappell.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/chappell.png"></div><div class="producto-info"><h3>Tote Bag Chappell</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Chappellroan" data-precio="10000" data-img="ToteBag/Chappellroan.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/chappellroan.png"></div><div class="producto-info"><h3>Tote Bag ChappellRoan</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Djo" data-precio="10000" data-img="ToteBag/Djo.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/djo.png"></div><div class="producto-info"><h3>Tote Bag Djo</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Harry Me" data-precio="10000" data-img="ToteBag/Harry.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/harry.png"></div><div class="producto-info"><h3>Tote Bag Harry Me</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Harry House" data-precio="10000" data-img="ToteBag/Harryhouse.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/harryhouse.png"></div><div class="producto-info"><h3>Tote Bag Harry House</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag I Love 1D" data-precio="10000" data-img="ToteBag/Ilove1d.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/ilove1d.png"></div><div class="producto-info"><h3>Tote Bag I Love 1D</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag I Love Harry" data-precio="10000" data-img="ToteBag/Iloveharry.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/iloveharry.png"></div><div class="producto-info"><h3>Tote Bag I Love Harry</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag karma Is A Cat" data-precio="10000" data-img="ToteBag/Karmaisacat.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/karmaisacat.png"></div><div class="producto-info"><h3>Tote Bag Karma Is a Kat</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Katseye" data-precio="10000" data-img="ToteBag/katyse.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/katyse.png"></div><div class="producto-info"><h3>Tote Bag Katseye</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Kissco" data-precio="10000" data-img="ToteBag/Kissco.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/kissco.png"></div><div class="producto-info"><h3>Tote Bag Kissco</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Lemonade" data-precio="10000" data-img="ToteBag/lemonade.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/lemonade.png"></div><div class="producto-info"><h3>Tote Bag lemonade</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Manchild" data-precio="10000" data-img="ToteBag/manchild.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/manchild.png"></div><div class="producto-info"><h3>Tote Bag Manchild</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Manchild Azul" data-precio="10000" data-img="ToteBag/mandchil_blue.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/mandchil_blue.png"></div><div class="producto-info"><h3>Tote Bag Manchild Blue</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Mans Best Fried" data-precio="10000" data-img="ToteBag/mansbestfriend.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/mansbestfriend.png"></div><div class="producto-info"><h3>Tote Bag Mans Best Friend</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Mayhem" data-precio="10000" data-img="ToteBag/mayhem.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/mayhem.png"></div><div class="producto-info"><h3>Tote Bag Mayhem</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Midnight Memories" data-precio="10000" data-img="ToteBag/midnightmemories.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/midnightmemories.png"></div><div class="producto-info"><h3>Tote Bag Midnight Memories</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Olivia Rodrigo" data-precio="10000" data-img="ToteBag/oliviarodrigo.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/oliviarodrigo.png"></div><div class="producto-info"><h3>Tote Bag Olivia Rodrigo</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Please" data-precio="10000" data-img="ToteBag/please.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/please.png"></div><div class="producto-info"><h3>Tote Bag Please</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Reputation" data-precio="10000" data-img="ToteBag/reputation.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/reputation.png"></div><div class="producto-info"><h3>Tote Bag Reputation</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Showgirl" data-precio="10000" data-img="ToteBag/showgirl.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/showgirl.png"></div><div class="producto-info"><h3>Tote Bag Showgirl</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Swiftie" data-precio="10000" data-img="ToteBag/swiftie.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/swiftie.png"></div><div class="producto-info"><h3>Tote Bag Swiftie</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag The Eras Tour" data-precio="10000" data-img="ToteBag/theerastour.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/theerastour.png"></div><div class="producto-info"><h3>Tote Bag The Eras Tour</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag The Life" data-precio="10000" data-img="ToteBag/thelife.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/thelife.png"></div><div class="producto-info"><h3>Tote Bag The Life</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+            <div class="producto-card" onclick="abrirProducto(this)" data-nombre="Tote Bag Walls" data-precio="10000" data-img="ToteBag/walls.png" data-desc="Tote Bag" data-talles="" data-colores="" data-linkmp="https://mpago.la/1pRGnv6"><div class="img-placeholder"><img src="ToteBag/walls.png"></div><div class="producto-info"><h3>Tote Bag Walls</h3><p class="precio">$10.000</p><span class="btn-ver">Ver Producto</span></div></div>
+
         </div>
 
         <center><h2 id="vasos" class="titulo-seccion">Vasos</h2></center>
@@ -375,17 +414,36 @@
             document.getElementById('total-precio').innerText = total.toLocaleString('es-AR');
         }
 
-        function removerItem(i) { carrito.splice(i, 1); actualizarCarrito(); }
-
         function enviarPedido() {
             if (carrito.length === 0) return;
             let msg = "Hola MIDNIGHTSTORE! 🌙 Pedido:%0A%0A";
+            
+            // --- INICIO CÓDIGO EMAILJS: Preparamos el mail limpio sin caracteres raros de WhatsApp ---
+            let msgEmail = "Se ha iniciado un nuevo pedido por WhatsApp:\n\n"; 
             let total = 0;
+            
             carrito.forEach(i => {
                 msg += `- ${i.cantidad}x ${i.nombre} ($${(i.precio*i.cantidad).toLocaleString('es-AR')})%0A`;
+                msgEmail += `- ${i.cantidad}x ${i.nombre} ($${(i.precio*i.cantidad).toLocaleString('es-AR')})\n`;
                 total += i.precio * i.cantidad;
             });
+            
             msg += `%0A*Total: $${total.toLocaleString('es-AR')}*%0A%0A📍 Ciudad/CP: _______`;
+            msgEmail += `\nTotal: $${total.toLocaleString('es-AR')}\n`;
+
+            const templateParams = {
+                detalle_pedido: msgEmail // Esta variable 'detalle_pedido' es la que vas a usar en la plantilla de EmailJS
+            };
+
+            emailjs.send("service_e7zzb5c", "template_do28vwc", templateParams)
+                .then(function() {
+                    console.log('¡Mail enviado a Camila exitosamente!');
+                }, function(error) {
+                    console.error('Hubo un error al enviar el mail', error);
+                });
+            // --- FIN CÓDIGO EMAILJS ---
+
+            // Redirección normal a WhatsApp
             window.open(`https://wa.me/3412274035?text=${msg}`, '_blank');
         }
         

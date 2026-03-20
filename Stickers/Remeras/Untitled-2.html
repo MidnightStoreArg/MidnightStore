@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIDNIGHTSTORE | Catálogo</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Courier+New&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           ESTILOS (CSS)
+           ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, html {
+            width: 100%; height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0eee9;
+            color: #2d2d2d;
+            overflow-x: hidden;
+        }
+
+        body.locked { overflow: hidden; }
+
+        /* --- INTRODUCCIÓN --- */
+        #intro-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: #1f1f1f;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 99999; cursor: pointer;
+            user-select: none;
+        }
+
+        .brand-intro {
+            font-family: 'Courier New', monospace;
+            font-size: 3rem; font-weight: 800; color: #fff;
+            letter-spacing: 5px; margin-bottom: 10px; text-transform: uppercase; text-align: center;
+        }
+        .tagline-intro {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem; color: #aaa;
+            letter-spacing: 2px; border-top: 1px solid #666; padding-top: 10px;
+        }
+        .click-hint {
+            margin-top: 40px; font-family: 'Courier New', monospace;
+            font-size: 0.8rem; color: #8a2be2; animation: parpadeo 1.5s infinite;
+        }
+        .vortex-anim { animation: vortexGo 1.5s cubic-bezier(0.7, 0, 0.3, 1) forwards; pointer-events: none; }
+
+        @keyframes vortexGo {
+            0% { transform: rotate(0deg) scale(1); opacity: 1; filter: blur(0); }
+            100% { transform: rotate(720deg) scale(0); opacity: 0; filter: blur(20px); }
+        }
+        @keyframes parpadeo { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+        /* --- TIENDA --- */
+        #tienda-container { display: none; opacity: 0; transition: opacity 1.5s ease; width: 100%; }
+
+        /* BARRA DE ANUNCIO (NUEVO) */
+        .announcement-bar {
+            background-color: #ffcce0;
+            color: #cc0000;
+            text-align: center;
+            padding: 10px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .menu-principal {
+            background-color: #222; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .categorias a { color: #ddd; text-decoration: none; margin-right: 15px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
+        .categorias a:hover { color: #fff; }
+        .redes a { color: white; font-size: 1.2rem; }
+
+        .header-content { text-align: center; padding: 40px 20px 20px; }
+        .logo-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        h1 { margin-top: 15px; font-size: 2rem; color: #111; letter-spacing: 2px; }
+
+        /* SECCIÓN CATEGORÍAS (NUEVO) */
+        .categorias-section { padding: 20px; text-align: center; }
+        .categorias-grid {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;
+            max-width: 1200px; margin: 0 auto;
+        }
+        .categoria-item {
+            width: 180px; text-align: center; cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .categoria-item:hover { transform: scale(1.05); }
+        .categoria-item img {
+            width: 100%; height: 180px; object-fit: cover;
+            border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .categoria-item h3 {
+            margin-top: 10px; font-size: 0.9rem; font-weight: 600; text-transform: uppercase;
+        }
+
+        .section-title {
+            text-align: center; margin: 50px 0 30px;
+            font-size: 1.5rem; text-transform: uppercase; color: #111;
+            font-weight: 800; border-bottom: 2px solid #111; display: inline-block;
+        }
+        .center-div { text-align: center; }
+
+        .galeria {
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 25px; padding: 0 20px 50px; max-width: 1200px; margin: 0 auto;
+            min-height: 50px;
+        }
+
+        .card {
+            background: white; border-radius: 5px; width: 260px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden; display: flex; flex-direction: column;
+            transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+        .img-box {
+            width: 100%; height: 250px; background: #e5e5e5;
+            display: flex; align-items: center; justify-content: center; color: #555;
+        }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        .info-box { padding: 15px; text-align: center; display: flex; flex-direction: column; flex-grow: 1; }
+        .info-box h3 { font-size: 1rem; margin: 10px 0; color: #333; min-height: 40px; font-weight: 600; }
+        .precio { font-size: 1.2rem; font-weight: 800; color: #000; margin-bottom: 10px; }
+
+        .btn { display: block; padding: 10px; text-align: center; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 0.85rem; margin-top: 5px; text-transform: uppercase; }
+        .btn-black { background: #111; color: white; border: none; }
+        .btn-black:hover { background: #333; }
+        .btn-outline { background: transparent; border: 1px solid #999; color: #555; }
+        .btn-outline:hover { border-color: #25D366; color: #25D366; }
+
+        /* FOOTER DE PAGOS (NUEVO) */
+        .medios-pago {
+            border-top: 1px solid #ddd;
+            padding: 40px 20px;
+            background-color: #fff;
+            text-align: center;
+        }
+        .medios-pago h3 {
+            font-weight: 300; margin-bottom: 20px; letter-spacing: 2px; font-size: 1.2rem;
+        }
+        .logos-pago img {
+            height: 30px; margin: 5px 10px; vertical-align: middle; opacity: 0.8;
+        }
+
+    </style>
+</head>
+<body class="locked">
+
+    <div id="intro-overlay">
+        <div class="brand-intro">MIDNIGTH</div>
+        <div class="tagline-intro">Merch De Fans Para Fans</div>
+        <div class="click-hint">[ CLICK PARA ENTRAR ]</div>
+    </div>
+
+    <div id="tienda-container">
+        
+        <div class="announcement-bar">
+            10% OFF POR TRANSF / 15 DIAS HABILES DE ELABORACIÓN
+        </div>
+
+        <nav class="menu-principal">
+            <div class="categorias">
+                <a href="#promos" style="color: #ffdd00;"> PROMOS</a>
+                <a href="#remeras">Remeras</a>
+                <a href="#tazas">Tazas</a>
+                <a href="#totebag">Tote Bags</a>
+                <a href="#">Guía de talles</a> </div>
+            <div class="redes">
+                <a href="https://instagram.com/midnightstore.ar" target="_blank"><i class="fab fa-instagram"></i></a>
+            </div>
+        </nav>
+
+        <div class="header-content">
+            <img src="Logo midnigth.png.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+            <h1>MIDNIGHTSTORE</h1>
+        </div>
+
+        <section class="categorias-section">
+            <div class="center-div"><h2 style="font-size:1.5rem; text-transform:uppercase; margin-bottom:20px;">Categorías</h2></div>
+            <div class="categorias-grid">
+                <div class="categoria-item" onclick="document.getElementById('promos').scrollIntoView({behavior: 'smooth'})">
+                    <img src="https://via.placeholder.com/200?text=PROMOS" alt="Promos">
+                    <h3>PROMOS</h3>
+                </div>
+                <div class="categoria-item">
+                    <img src="https://via.placeholder.com/200?text=PERSONALIZADOS" alt="Personalizados">
+                    <h3>Personalizados</h3>
+                </div>
+                <div class="categoria-item" onclick="document.getElementById('remeras').scrollIntoView({behavior: 'smooth'})">
+                    <img src="https://via.placeholder.com/200?text=REMERAS" alt="Remeras">
+                    <h3>Remeras</h3>
+                </div>
+                <div class="categoria-item" onclick="document.getElementById('totebag').scrollIntoView({behavior: 'smooth'})">
+                    <img src="https://via.placeholder.com/200?text=TOTE+BAGS" alt="Tote Bags">
+                    <h3>Tote Bags y Mochilas</h3>
+                </div>
+                <div class="categoria-item">
+                    <img src="https://via.placeholder.com/200?text=MEDIAS" alt="Medias">
+                    <h3>Medias</h3>
+                </div>
+                <div class="categoria-item">
+                    <img src="https://via.placeholder.com/200?text=TAZAS" alt="Tazas">
+                    <h3>tazas</h3>
+                </div>
+            </div>
+        </section>
+
+        <div class="center-div"><div class="section-title" id="promos">🔥 Promos</div></div>
+        <div class="galeria" id="contenedor-promos"></div>
+
+        <div class="center-div"><div class="section-title" id="remeras">Remeras</div></div>
+        <div class="galeria" id="contenedor-remeras"></div>
+
+        <div class="center-div"><div class="section-title" id="tazas">Tazas</div></div>
+        <div class="galeria" id="contenedor-tazas"></div>
+
+        <div class="center-div"><div class="section-title" id="totebag">Tote Bags</div></div>
+        <div class="galeria" id="contenedor-totebag"></div>
+        
+        <br><br>
+
+        <footer class="medios-pago">
+            <h3>MEDIOS DE PAGO</h3>
+            <div class="logos-pago">
+                <img src="https://logotipoz.com/wp-content/uploads/2021/10/mercado-pago-logo.png" alt="Mercado Pago">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Pago_F%C3%A1cil_logo.png/800px-Pago_F%C3%A1cil_logo.png" alt="Pago Fácil">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Rapipago_logo.svg/1280px-Rapipago_logo.svg.png" alt="Rapipago">
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        /* ==============================================
+           A) BASE DE DATOS DE PRODUCTOS
+           ============================================== */
+        const inventario = [
+            // PROMOS
+            {
+                categoria: "promos",
+                nombre: "Combo Fan",
+                precio: 25000,
+                img: "Promos/promo1.jpg",
+                linkPago: "https://wa.me/5493412274035?text=Quiero%20el%20Combo",
+                tipoBoton: "pedir"
+            },
+            // REMERAS
+            {
+                categoria: "remeras",
+                nombre: "Baby tee?",
+                precio: 23000,
+                img: "Remeras/LALI 1.jpg.png",
+                linkPago: "https://mpago.la/1VhSuDt",
+                tipoBoton: "comprar"
+            },
+            {
+                categoria: "remeras",
+                nombre: "Nunca Fui Lo Que Querían",
+                precio: 25000,
+                img: "Remeras/nuncafui.jpg.png",
+                linkPago: "link.mercadopago.com.ar/articulomidnight",
+                tipoBoton: "comprar"
+            },
+            {
+                categoria: "remeras",
+                nombre: "Harry Styles - Love Tour",
+                precio: 23000,
+                img: "Remeras/harry.jpg",
+                linkPago: "https://mpago.li/LINK_NUEVO",
+                tipoBoton: "comprar"
+            },
+            // TAZAS
+            {
+                categoria: "tazas",
+                nombre: "Taza Louis",
+                precio: 8000,
+                img: "Tazas/TazaLouis.jpg.png",
+                linkPago: "https://mpago.li/2Ct5ebj",
+                tipoBoton: "comprar"
+            },
+            // TOTE BAGS
+            {
+                categoria: "totebag",
+                nombre: "Tote Bag Taylor",
+                precio: 12000,
+                img: "ToteBag/totebagTaylor.jpg.png",
+                linkPago: "https://mpago.li/2Ct5ebj",
+                tipoBoton: "comprar"
+            }
+            // TAZAS
+        
+        ];
+
+        /* ==============================================
+           B) FUNCIONES DEL SISTEMA
+           ============================================== */
+        
+        function cargarProductos() {
+            inventario.forEach(producto => {
+                const contenedor = document.getElementById(`contenedor-${producto.categoria}`);
+                if (contenedor) {
+                    const precioStr = producto.precio.toLocaleString('es-AR');
+                    const imagenFallback = "https://via.placeholder.com/260x250/cccccc/555555?text=Sin+Imagen";
+
+                    const tarjetaHTML = `
+                        <div class="card">
+                            <div class="img-box">
+                                <img src="${producto.img}" alt="${producto.nombre}" onerror="this.src='${imagenFallback}'">
+                            </div>
+                            <div class="info-box">
+                                <h3>${producto.nombre}</h3>
+                                <p class="precio">$${precioStr}</p>
+                                ${generarBotones(producto)}
+                            </div>
+                        </div>
+                    `;
+                    contenedor.innerHTML += tarjetaHTML;
+                }
+            });
+        }
+
+        function generarBotones(producto) {
+            const waLink = `https://wa.me/5493412274035?text=Hola,%20tengo%20una%20duda%20sobre%20${encodeURIComponent(producto.nombre)}`;
+            
+            if (producto.tipoBoton === "pedir") {
+                return `<a href="${producto.linkPago}" class="btn btn-black" target="_blank">Pedir</a>`;
+            } else {
+                return `
+                    <a href="${producto.linkPago}" class="btn btn-black" target="_blank">Comprar</a>
+                    <a href="${waLink}" class="btn btn-outline" target="_blank">Consultar</a>
+                `;
+            }
+        }
+
+        /* ==============================================
+           C) INICIALIZACIÓN
+           ============================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarProductos();
+
+            const overlay = document.getElementById('intro-overlay');
+            const tienda = document.getElementById('tienda-container');
+            const body = document.body;
+
+            function activarSitio() {
+                overlay.classList.add('vortex-anim');
+                setTimeout(() => {
+                    tienda.style.display = 'block';
+                    requestAnimationFrame(() => {
+                        tienda.style.opacity = '1';
+                    });
+                }, 800);
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    body.classList.remove('locked');
+                    body.style.overflow = 'auto'; 
+                }, 1500);
+            }
+
+            overlay.addEventListener('click', activarSitio);
+            window.addEventListener('keydown', (e) => {
+                if(e.key === 'Enter') activarSitio();
+            });
+        });
+    </script>
+</body>
+</html>
