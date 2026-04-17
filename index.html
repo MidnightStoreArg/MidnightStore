@@ -363,8 +363,7 @@
         const cuponesValidos = {
             "MIDNIGHT10": 0.10, 
             "FANS15": 0.15,
-            "TINI20": 0.20,
-            "WALYT100": 1.00
+            "TINI20": 0.20
         };
         let descuentoActual = 0;
         let nombreCupon = "";
@@ -498,10 +497,12 @@
             let msg = `Hola MIDNIGHTSTORE! 🌙%0ASoy *${nombreCliente}* (Tel: ${telefonoCliente}).%0A%0APedido:%0A`;
             let msgEmail = `Nuevo pedido de: ${nombreCliente}\nTeléfono: ${telefonoCliente}\n\n`;
             let subtotal = 0;
+            let resumenExcel = "";
             
             carrito.forEach(i => {
                 msg += `- ${i.cantidad}x ${i.nombre} ($${(i.precio*i.cantidad).toLocaleString('es-AR')})%0A`;
                 msgEmail += `- ${i.cantidad}x ${i.nombre} ($${(i.precio*i.cantidad).toLocaleString('es-AR')})\n`;
+                resumenExcel += `${i.cantidad}x ${i.nombre} | `;
                 subtotal += i.precio * i.cantidad;
             });
 
@@ -511,6 +512,7 @@
             if (descuentoActual > 0) {
                 msg += `%0A🎁 Cupón: *${nombreCupon}* (-$${montoDesc.toLocaleString('es-AR')})%0A*Total a Pagar: $${totalFinal.toLocaleString('es-AR')}*`;
                 msgEmail += `\nCupón: ${nombreCupon}\nTotal Final: $${totalFinal.toLocaleString('es-AR')}`;
+                resumenExcel += ` (Cupón: ${nombreCupon})`;
             } else {
                 msg += `%0A*Total: $${subtotal.toLocaleString('es-AR')}*`;
                 msgEmail += `\nTotal Final: $${subtotal.toLocaleString('es-AR')}`;
@@ -518,7 +520,23 @@
             
             msg += `%0A%0A📍 Ciudad/CP: _______`;
 
+            // Manda el correo por EmailJS
             emailjs.send("service_e7zzb5c", "template_do28vwc", { detalle_pedido: msgEmail });
+
+            // Manda los datos al Excel en segundo plano
+            fetch(urlScript, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({
+                    nombre: nombreCliente, 
+                    telefono: telefonoCliente,
+                    pedido: resumenExcel, 
+                    total: totalFinal, 
+                    linkMP: "WhatsApp / Transferencia" 
+                })
+            }).catch(e => console.log("Error al enviar a Excel", e));
+
+            // Abre el WhatsApp
             window.open(`https://wa.me/3412274035?text=${msg}`, '_blank');
         }
 
