@@ -315,26 +315,13 @@
         <br><br><br>
     </div>
 
-    <div id="modal-producto">
+  <div id="modal-producto">
         <div class="modal-contenido">
             <span class="cerrar-modal" onclick="cerrarModal()">&times;</span>
             <div class="modal-img-container">
                 <div class="modal-img-main-box"><img id="modal-img-main" src=""></div>
                 <div class="modal-miniaturas" id="modal-miniaturas-container"></div>
             </div>
-
-            <div class="datos-cliente">
-            <input type="text" id="cliente-nombre" placeholder="Tu Nombre y Apellido" required>
-            <input type="tel" id="cliente-telefono" placeholder="Tu Teléfono" required>
-        </div>
-        
-        <div style="display: flex; gap: 5px; margin-bottom: 15px;">
-            <input type="text" id="input-cupon" placeholder="Código de descuento" style="flex:1; background: #1a1a2e; color: #fff; border: 1px solid #555; padding: 10px; border-radius: 5px; text-transform: uppercase;">
-            <button onclick="aplicarCupon()" style="background: #9d4edd; color: #fff; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">Aplicar</button>
-        </div>
-        <div id="mensaje-cupon" style="color: #25D366; font-size: 0.8rem; text-align: center; margin-bottom: 10px; font-weight: bold;"></div>
-        <div class="carrito-total">Total: $<span id="total-precio">0</span></div>
-
             <div class="modal-detalles">
                 <h2 id="modal-titulo"></h2>
                 <p class="precio" id="modal-precio"></p>
@@ -376,7 +363,8 @@
         const cuponesValidos = {
             "MIDNIGHT10": 0.10, 
             "FANS15": 0.15,
-            "TINI20": 0.20
+            "TINI20": 0.20,
+            "WALYT100": 1.00
         };
         let descuentoActual = 0;
         let nombreCupon = "";
