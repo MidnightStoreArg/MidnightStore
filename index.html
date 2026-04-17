@@ -322,6 +322,19 @@
                 <div class="modal-img-main-box"><img id="modal-img-main" src=""></div>
                 <div class="modal-miniaturas" id="modal-miniaturas-container"></div>
             </div>
+
+            <div class="datos-cliente">
+            <input type="text" id="cliente-nombre" placeholder="Tu Nombre y Apellido" required>
+            <input type="tel" id="cliente-telefono" placeholder="Tu Teléfono" required>
+        </div>
+        
+        <div style="display: flex; gap: 5px; margin-bottom: 15px;">
+            <input type="text" id="input-cupon" placeholder="Código de descuento" style="flex:1; background: #1a1a2e; color: #fff; border: 1px solid #555; padding: 10px; border-radius: 5px; text-transform: uppercase;">
+            <button onclick="aplicarCupon()" style="background: #9d4edd; color: #fff; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">Aplicar</button>
+        </div>
+        <div id="mensaje-cupon" style="color: #25D366; font-size: 0.8rem; text-align: center; margin-bottom: 10px; font-weight: bold;"></div>
+        <div class="carrito-total">Total: $<span id="total-precio">0</span></div>
+
             <div class="modal-detalles">
                 <h2 id="modal-titulo"></h2>
                 <p class="precio" id="modal-precio"></p>
@@ -343,17 +356,34 @@
         <h2 style="text-align: center; color: #9d4edd;">Tu Pedido</h2>
         <div class="carrito-items" id="carrito-items"></div>
         
-        <div class="datos-cliente">
-            <input type="text" id="cliente-nombre" placeholder="Tu Nombre y Apellido" required>
-            <input type="tel" id="cliente-telefono" placeholder="Tu Teléfono" required>
+        <div class="datos-cliente" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+            <input type="text" id="cliente-nombre" placeholder="Tu Nombre y Apellido" required style="background: #1a1a2e; color: #fff; border: 1px solid #555; padding: 12px; border-radius: 5px; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; outline: none; width: 100%; box-sizing: border-box;">
+            <input type="tel" id="cliente-telefono" placeholder="Tu Teléfono" required style="background: #1a1a2e; color: #fff; border: 1px solid #555; padding: 12px; border-radius: 5px; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; outline: none; width: 100%; box-sizing: border-box;">
         </div>
+
+        <div style="display: flex; gap: 5px; margin-bottom: 15px;">
+            <input type="text" id="input-cupon" placeholder="Cupón de descuento" style="flex:1; background: #1a1a2e; color: #fff; border: 1px solid #555; padding: 10px; border-radius: 5px; text-transform: uppercase; outline: none;">
+            <button onclick="aplicarCupon()" style="background: #9d4edd; color: #fff; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">Aplicar</button>
+        </div>
+        <div id="mensaje-cupon" style="color: #25D366; font-size: 0.8rem; text-align: center; margin-bottom: 10px; font-weight: bold;"></div>
         
-        <div class="carrito-total">Total: $<span id="total-precio">0</span></div>
-        <button class="btn-finalizar" onclick="enviarPedido()"><i class="fab fa-whatsapp"></i> Finalizar por WhatsApp</button>
+        <div class="carrito-total" style="font-weight: bold; font-size: 1.2rem; margin-bottom: 15px; text-align: center;">Total: $<span id="total-precio">0</span></div>
+        <button class="btn-finalizar" onclick="enviarPedido()" style="background: #25D366; color: #000; border: none; padding: 15px; border-radius: 5px; font-weight: bold; text-transform: uppercase; cursor: pointer; width: 100%;"><i class="fab fa-whatsapp"></i> Finalizar por WhatsApp</button>
     </div>
 
     <script>
-        // OVERLAY
+        // CONFIGURACIÓN DE CUPONES
+        const cuponesValidos = {
+            "MIDNIGHT10": 0.10, 
+            "FANS15": 0.15,
+            "TINI20": 0.20
+        };
+        let descuentoActual = 0;
+        let nombreCupon = "";
+
+        // URL DE GOOGLE APPS SCRIPT
+        const urlScript = "https://script.google.com/macros/s/AKfycbycTTsTmla41I9L_AauUs-U0vGow6MWcIXR4AaxEtc3xkSNFhkoPBP-2uUGX4jwxJOb/exec";
+
         document.addEventListener('DOMContentLoaded', () => {
             const overlay = document.getElementById('intro-overlay');
             const tienda = document.getElementById('tienda-container');
@@ -365,7 +395,6 @@
             });
         });
 
-        // MODAL LOGIC
         let productoActual = null;
         let linkMPActual = "";
 
@@ -413,7 +442,6 @@
 
         function cerrarModal() { document.getElementById('modal-producto').style.display = 'none'; }
 
-        // CARRITO LOGIC
         let carrito = [];
         function toggleCarrito() { document.getElementById('carrito-sidebar').classList.toggle('abierto'); }
 
@@ -431,109 +459,116 @@
             actualizarCarrito(); cerrarModal(); toggleCarrito();
         });
 
-        function actualizarCarrito() {
-            const container = document.getElementById('carrito-items');
-            container.innerHTML = ''; let total = 0; let count = 0;
-            carrito.forEach((item, i) => {
-                total += item.precio * item.cantidad; count += item.cantidad;
-                container.innerHTML += `<div class="cart-item"><div><b>${item.cantidad}x ${item.nombre}</b><br>$${(item.precio*item.cantidad).toLocaleString('es-AR')}</div><button style="background:none; border:none; color:#ff4444; cursor:pointer;" onclick="removerItem(${i})"><i class="fas fa-trash"></i></button></div>`;
-            });
-            document.getElementById('cart-count').innerText = count;
-            document.getElementById('total-precio').innerText = total.toLocaleString('es-AR');
+        function aplicarCupon() {
+            const input = document.getElementById('input-cupon').value.trim().toUpperCase();
+            const mensaje = document.getElementById('mensaje-cupon');
+            if (cuponesValidos[input]) {
+                descuentoActual = cuponesValidos[input];
+                nombreCupon = input;
+                mensaje.innerText = `✅ Cupón ${input} aplicado (-${descuentoActual * 100}%)`;
+                mensaje.style.color = "#25D366";
+            } else {
+                descuentoActual = 0; nombreCupon = "";
+                mensaje.innerText = "❌ Cupón inválido";
+                mensaje.style.color = "#ff4444";
+            }
+            actualizarCarrito();
         }
 
-        function enviarPedido() {
+        function actualizarCarrito() {
+            const container = document.getElementById('carrito-items');
+            const btnMP = document.getElementById('btn-mp-directo');
+            container.innerHTML = ''; let subtotal = 0; let count = 0;
+            carrito.forEach((item, i) => {
+                subtotal += item.precio * item.cantidad; count += item.cantidad;
+                container.innerHTML += `<div class="cart-item"><div><b>${item.cantidad}x ${item.nombre}</b><br>$${(item.precio*item.cantidad).toLocaleString('es-AR')}</div><button style="background:none; border:none; color:#ff4444; cursor:pointer;" onclick="removerItem(${i})"><i class="fas fa-trash"></i></button></div>`;
+            });
+
+            let montoDescuento = subtotal * descuentoActual;
+            let totalFinal = subtotal - montoDescuento;
+
+            if (descuentoActual > 0 && subtotal > 0) {
+                document.getElementById('total-precio').innerHTML = `<del style="color:#888; font-size:0.9rem;">$${subtotal.toLocaleString('es-AR')}</del> $${totalFinal.toLocaleString('es-AR')}`;
+                if(btnMP) btnMP.style.display = 'none'; 
+            } else {
+                document.getElementById('total-precio').innerText = subtotal.toLocaleString('es-AR');
+                if(btnMP && linkMPActual) btnMP.style.display = 'block';
+            }
+            document.getElementById('cart-count').innerText = count;
+        }
+
+        async function enviarPedido() {
             if (carrito.length === 0) return;
-            
             const nombreCliente = document.getElementById('cliente-nombre').value.trim();
             const telefonoCliente = document.getElementById('cliente-telefono').value.trim();
 
             if (!nombreCliente || !telefonoCliente) {
-                alert("⚠️ Por favor, completá tu nombre y teléfono antes de finalizar el pedido.");
+                alert("⚠️ Completá tu nombre y teléfono para finalizar.");
                 return;
             }
 
-            let msg = `Hola MIDNIGHTSTORE! 🌙%0ASoy *${nombreCliente}* (Tel: ${telefonoCliente}).%0A%0AQuiero hacer el siguiente pedido:%0A%0A`;
-            
-            let msgEmail = `Se ha iniciado un nuevo pedido por WhatsApp:\nCliente: ${nombreCliente}\nTeléfono: ${telefonoCliente}\n\nDetalle:\n`; 
-            let total = 0;
+            let msg = `Hola MIDNIGHTSTORE! 🌙%0ASoy *${nombreCliente}* (Tel: ${telefonoCliente}).%0A%0APedido:%0A`;
+            let msgEmail = `Nuevo pedido de: ${nombreCliente}\nTeléfono: ${telefonoCliente}\n\n`;
+            let subtotal = 0;
             
             carrito.forEach(i => {
                 msg += `- ${i.cantidad}x ${i.nombre} ($${(i.precio*i.cantidad).toLocaleString('es-AR')})%0A`;
                 msgEmail += `- ${i.cantidad}x ${i.nombre} ($${(i.precio*i.cantidad).toLocaleString('es-AR')})\n`;
-                total += i.precio * i.cantidad;
+                subtotal += i.precio * i.cantidad;
             });
-            
-            msg += `%0A*Total: $${total.toLocaleString('es-AR')}*%0A%0A📍 Ciudad/CP: _______`;
-            msgEmail += `\nTotal: $${total.toLocaleString('es-AR')}\n`;
 
-            const templateParams = {
-                detalle_pedido: msgEmail 
-            };
-
-            emailjs.send("service_e7zzb5c", "template_do28vwc", templateParams)
-                .then(function() {
-                    console.log('¡Mail enviado a Camila exitosamente!');
-                }, function(error) {
-                    console.error('Hubo un error al enviar el mail', error);
-                });
+            let montoDesc = subtotal * descuentoActual;
+            let totalFinal = subtotal - montoDesc;
             
+            if (descuentoActual > 0) {
+                msg += `%0A🎁 Cupón: *${nombreCupon}* (-$${montoDesc.toLocaleString('es-AR')})%0A*Total a Pagar: $${totalFinal.toLocaleString('es-AR')}*`;
+                msgEmail += `\nCupón: ${nombreCupon}\nTotal Final: $${totalFinal.toLocaleString('es-AR')}`;
+            } else {
+                msg += `%0A*Total: $${subtotal.toLocaleString('es-AR')}*`;
+                msgEmail += `\nTotal Final: $${subtotal.toLocaleString('es-AR')}`;
+            }
+            
+            msg += `%0A%0A📍 Ciudad/CP: _______`;
+
+            emailjs.send("service_e7zzb5c", "template_do28vwc", { detalle_pedido: msgEmail });
             window.open(`https://wa.me/3412274035?text=${msg}`, '_blank');
         }
-        
-        // --- ACÁ EMPIEZA LA PARTE NUEVA PARA MERCADO PAGO ---
+
         document.getElementById('btn-mp-directo').addEventListener('click', async () => {
             const nombreCliente = document.getElementById('cliente-nombre').value.trim();
             const telefonoCliente = document.getElementById('cliente-telefono').value.trim();
 
             if (!nombreCliente || !telefonoCliente) {
-                alert("⚠️ Por favor, abrí el carrito (ícono arriba a la derecha) y completá tu nombre y teléfono para poder ir a pagar.");
+                alert("⚠️ Abrí el carrito y completá tu nombre y teléfono para pagar.");
                 return;
             }
 
             const btnMP = document.getElementById('btn-mp-directo');
-            const textoOriginal = btnMP.innerHTML;
-            btnMP.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Abriendo Mercado Pago...";
+            const originalText = btnMP.innerHTML;
+            btnMP.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Cargando...";
             btnMP.disabled = true;
 
-            // Preparamos lo que va al Excel
-            let detallePedido = `${productoActual.nombre}`;
-            if (document.getElementById('contenedor-talles').style.display !== 'none') detallePedido += ` (Talle: ${document.getElementById('modal-select-talle').value})`;
-            if (document.getElementById('contenedor-colores').style.display !== 'none') detallePedido += ` (Color: ${document.getElementById('modal-select-color').value})`;
+            let detalle = `${productoActual.nombre}`;
+            if (document.getElementById('contenedor-talles').style.display !== 'none') detalle += ` (${document.getElementById('modal-select-talle').value})`;
 
-            const datosParaExcel = {
-                nombre: nombreCliente,
-                telefono: telefonoCliente,
-                pedido: detallePedido,
-                total: productoActual.precio,
-                linkMP: linkMPActual
-            };
-
-            // Enviamos a Google Sheets //
             try {
-                const urlScript = "https://script.google.com/macros/s/AKfycbz-2KAfGmbV3HKP65NKAUUypYx-y6PTzWqVt4ILgoCPzKyCjbYuwZmQ169CoqTYfM_T/exec";
-                
                 await fetch(urlScript, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: JSON.stringify(datosParaExcel)
+                    body: JSON.stringify({
+                        nombre: nombreCliente, telefono: telefonoCliente,
+                        pedido: detalle, total: productoActual.precio, linkMP: linkMPActual
+                    })
                 });
-
                 window.open(linkMPActual, '_blank');
-                
-            } catch (error) {
-                console.error("Error al conectar con Google Sheets:", error);
-                window.open(linkMPActual, '_blank'); 
+            } catch (e) {
+                window.open(linkMPActual, '_blank');
             } finally {
-                btnMP.innerHTML = textoOriginal;
-                btnMP.disabled = false;
+                btnMP.innerHTML = originalText; btnMP.disabled = false;
             }
         });
-        
-        function removerItem(index) {
-            carrito.splice(index, 1);
-            actualizarCarrito();
-        }
+
+        function removerItem(index) { carrito.splice(index, 1); actualizarCarrito(); }
     </script>
 </body>
 </html>
