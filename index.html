@@ -152,6 +152,48 @@
         .btn-finalizar { background: #25D366; color: #000; border: none; padding: 15px; border-radius: 5px; font-weight: bold; text-transform: uppercase; cursor: pointer; width: 100%; }
 
     </style>
+
+    <style>
+.precio-container {
+    display: flex;
+    flex-direction: column; /* Esto apila los precios uno arriba del otro */
+    align-items: center;
+    justify-content: center;
+    gap: 4px; /* Espacio entre el de arriba y el de abajo */
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+.precio-original {
+    text-decoration: none; /* ¡Se fue el tachado! */
+    color: #ffffff; /* Blanco para que resalte más */
+    font-size: 1.2rem; /* Más grande */
+    font-weight: bold;
+}
+.precio-descuento-fila {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.precio-descuento {
+    color: #FFD700; 
+    font-weight: bold; 
+    font-size: 1.1rem; /* Un pelín más chico para que el original gane protagonismo */
+}
+.etiqueta-off {
+    border: 1px solid #a0a0a0;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    color: #e0e0e0;
+}
+.aclaracion-pago {
+    font-size: 0.75rem;
+    color: #a0a0a0;
+    margin-bottom: 10px;
+    margin-top: 3px;
+    text-align: center;
+}
+</style>
 </head>
 <body class="locked">
 
@@ -175,10 +217,10 @@
                 </a>
                 <a href="#promos" style="color: #ffdd00;">★ PROMOS</a>
                 <a href="#remeras">Remeras</a>
-                <a href="#Buzos">Buzos</a>
+                <a href="#buzos">Buzos</a>
                 <a href="#ToteBag">Tote Bag</a>
                 <a href="#vasos">Vasos</a>
-                <a href="#Almohadones">Almohadones</a>
+                <a href="#almohadones">Almohadones</a>
 
             </div>
             <div class="redes">
@@ -447,10 +489,32 @@
             const overlay = document.getElementById('intro-overlay');
             const tienda = document.getElementById('tienda-container');
             const body = document.body;
+            
             overlay.addEventListener('click', () => {
                 overlay.classList.add('vortex-anim');
                 setTimeout(() => { tienda.style.display = 'block'; requestAnimationFrame(() => tienda.style.opacity = '1'); }, 800);
                 setTimeout(() => { overlay.style.display = 'none'; body.classList.remove('locked'); }, 1500);
+            });
+
+            // --- Lógica de 10% OFF visual en las Cards ---
+            document.querySelectorAll('.producto-card').forEach(card => {
+                const precioEl = card.querySelector('.precio');
+                let precioOriginal = parseInt(card.dataset.precio.toString().replace(/\D/g, ''));
+                
+                if (!isNaN(precioOriginal)) {
+                    let precioDescuento = precioOriginal * 0.90; 
+                    
+                    precioEl.innerHTML = precioEl.innerHTML = `
+                        <div class="precio-container">
+                            <span class="precio-original">$${precioOriginal.toLocaleString('es-AR')}</span>
+                            <div class="precio-descuento-fila">
+                                <span class="precio-descuento">$${precioDescuento.toLocaleString('es-AR')}</span>
+                                <span class="etiqueta-off">10% OFF</span>
+                            </div>
+                        </div>
+                        <p class="aclaracion-pago">en efvo. o transf.</p>
+                    `;
+                }
             });
         });
 
@@ -459,11 +523,25 @@
 
         function abrirProducto(card) {
             const d = card.dataset;
-            productoActual = { nombre: d.nombre, precio: parseInt(d.precio) };
+            
+            // Limpiamos caracteres por las dudas y calculamos el descuento
+            let precioLimpio = parseInt(d.precio.toString().replace(/\D/g, ''));
+            let precioDescuento = precioLimpio * 0.90;
+
+            productoActual = { nombre: d.nombre, precio: precioLimpio };
             linkMPActual = d.linkmp;
 
             document.getElementById('modal-titulo').innerText = d.nombre;
-            document.getElementById('modal-precio').innerText = "$" + productoActual.precio.toLocaleString('es-AR');
+            document.getElementById('modal-precio').innerHTML = `
+                <div class="precio-container">
+                    <span class="precio-original">$${precioLimpio.toLocaleString('es-AR')}</span>
+                    <div class="precio-descuento-fila">
+                        <span class="precio-descuento">$${precioDescuento.toLocaleString('es-AR')}</span>
+                        <span class="etiqueta-off">10% OFF</span>
+                    </div>
+                </div>
+                <p class="aclaracion-pago" style="margin-bottom: 5px;">en efectivo o transferencia</p>
+            `;
             document.getElementById('modal-desc').innerText = d.desc;
             
             const imgs = d.img.split(',');
@@ -543,14 +621,25 @@
                 container.innerHTML += `<div class="cart-item"><div><b>${item.cantidad}x ${item.nombre}</b><br>$${(item.precio*item.cantidad).toLocaleString('es-AR')}</div><button style="background:none; border:none; color:#ff4444; cursor:pointer;" onclick="removerItem(${i})"><i class="fas fa-trash"></i></button></div>`;
             });
 
-            let montoDescuento = subtotal * descuentoActual;
-            let totalFinal = subtotal - montoDescuento;
+            // Siempre aplicamos el 10% por transferencia/efectivo
+            let descuentoPorTransferencia = subtotal * 0.10;
+            // Si hay un cupón extra, lo calculamos también
+            let montoDescuentoCupon = subtotal * descuentoActual; 
+            
+            // Total a cobrar
+            let totalFinal = subtotal - descuentoPorTransferencia - montoDescuentoCupon;
 
-            if (descuentoActual > 0 && subtotal > 0) {
-                document.getElementById('total-precio').innerHTML = `<del style="color:#888; font-size:0.9rem;">$${subtotal.toLocaleString('es-AR')}</del> $${totalFinal.toLocaleString('es-AR')}`;
+            if (subtotal > 0) {
+                let textoDescuentos = "10% OFF Efectivo/Transf.";
+                if (descuentoActual > 0) textoDescuentos += ` + Cupón`;
+                
+                document.getElementById('total-precio').innerHTML = `
+                    <del style="color:#888; font-size:0.9rem;">$${subtotal.toLocaleString('es-AR')}</del> 
+                    $${totalFinal.toLocaleString('es-AR')} <span style="font-size:0.8rem; color:#FFD700; display:block;">(${textoDescuentos})</span>
+                `;
                 if(btnMP) btnMP.style.display = 'none'; 
             } else {
-                document.getElementById('total-precio').innerText = subtotal.toLocaleString('es-AR');
+                document.getElementById('total-precio').innerText = "0";
                 if(btnMP && linkMPActual) btnMP.style.display = 'block';
             }
             document.getElementById('cart-count').innerText = count;
@@ -578,17 +667,24 @@
                 subtotal += i.precio * i.cantidad;
             });
 
-            let montoDesc = subtotal * descuentoActual;
-            let totalFinal = subtotal - montoDesc;
+            // Matemáticas de los descuentos
+            let descuentoPorTransferencia = subtotal * 0.10;
+            let montoDescCupon = subtotal * descuentoActual;
+            let totalFinal = subtotal - descuentoPorTransferencia - montoDescCupon;
+            
+            msg += `%0A💵 Subtotal: $${subtotal.toLocaleString('es-AR')}`;
+            msg += `%0A💸 Descuento Transf/Efectivo (10%): -$${descuentoPorTransferencia.toLocaleString('es-AR')}`;
+            msgEmail += `\nSubtotal: $${subtotal.toLocaleString('es-AR')}`;
+            msgEmail += `\nDescuento Transf/Efvo: -$${descuentoPorTransferencia.toLocaleString('es-AR')}`;
             
             if (descuentoActual > 0) {
-                msg += `%0A🎁 Cupón: *${nombreCupon}* (-$${montoDesc.toLocaleString('es-AR')})%0A*Total a Pagar: $${totalFinal.toLocaleString('es-AR')}*`;
-                msgEmail += `\nCupón: ${nombreCupon}\nTotal Final: $${totalFinal.toLocaleString('es-AR')}`;
+                msg += `%0A🎁 Cupón: *${nombreCupon}* (-$${montoDescCupon.toLocaleString('es-AR')})`;
+                msgEmail += `\nCupón ${nombreCupon}: -$${montoDescCupon.toLocaleString('es-AR')}`;
                 resumenExcel += ` (Cupón: ${nombreCupon})`;
-            } else {
-                msg += `%0A*Total: $${subtotal.toLocaleString('es-AR')}*`;
-                msgEmail += `\nTotal Final: $${subtotal.toLocaleString('es-AR')}`;
             }
+            
+            msg += `%0A%0A*Total a Pagar: $${totalFinal.toLocaleString('es-AR')}*`;
+            msgEmail += `\nTotal Final: $${totalFinal.toLocaleString('es-AR')}`;
             
             msg += `%0A%0A📍 Ciudad/CP: _______`;
 
