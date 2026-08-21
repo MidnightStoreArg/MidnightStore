@@ -159,6 +159,100 @@ body.locked {
     color: #9d4edd; 
 }
 
+/* --- DROPDOWN MENÚ --- */
+.nav-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.nav-dropdown .dropdown-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.nav-dropdown .dropdown-trigger i {
+    font-size: 0.65rem;
+    transition: transform 0.3s ease;
+}
+
+.nav-dropdown:hover .dropdown-trigger i {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #0b0b18;
+    min-width: 200px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85), 0 0 15px rgba(157, 78, 221, 0.4);
+    border: 1px solid #9d4edd;
+    border-radius: 8px;
+    padding: 6px 0;
+    z-index: 1050;
+    max-height: 70vh;
+    overflow-y: auto;
+    backdrop-filter: blur(8px);
+}
+
+.nav-dropdown:hover .dropdown-menu,
+.nav-dropdown:focus-within .dropdown-menu {
+    display: block;
+    animation: dropdownFadeIn 0.22s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-menu a {
+    display: block !important;
+    padding: 10px 16px !important;
+    color: #e0e0e0 !important;
+    text-decoration: none !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px;
+    margin: 0 !important;
+    transition: all 0.2s ease !important;
+    border-bottom: 1px solid rgba(157, 78, 221, 0.12);
+    white-space: nowrap;
+}
+
+.dropdown-menu a:last-child {
+    border-bottom: none;
+}
+
+.dropdown-menu a:hover {
+    background-color: #1c0f33 !important;
+    color: #ffdd00 !important;
+    padding-left: 22px !important;
+}
+
+/* Scrollbar para el dropdown */
+.dropdown-menu::-webkit-scrollbar {
+    width: 5px;
+}
+.dropdown-menu::-webkit-scrollbar-track {
+    background: #0b0b18;
+}
+.dropdown-menu::-webkit-scrollbar-thumb {
+    background: #9d4edd;
+    border-radius: 4px;
+}
+
 .redes a, .icono-carrito { 
     color: white; 
     margin-left: 15px; 
@@ -235,6 +329,7 @@ h1 {
     background: linear-gradient(90deg, transparent, rgba(157, 78, 221, 0.3), transparent); 
     padding: 10px 0; 
     border-radius: 5px; 
+    scroll-margin-top: 80px;
 }
 
 /* --- GALERÍA MAIN --- */
