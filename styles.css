@@ -722,3 +722,33 @@ h1 {
     margin-top: 3px;
     text-align: center;
 }
+
+
+/* --- MOBILE OPTIMIZATION --- */
+@media (max-width: 768px) {
+    .menu-principal {
+        flex-direction: column;
+        padding: 10px 5px;
+        gap: 15px;
+    }
+    .categorias {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+    }
+    .categorias a {
+        margin-right: 0;
+        font-size: 0.8rem;
+    }
+    .redes {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+    }
+    .barra-anuncios {
+        font-size: 0.7rem;
+        padding: 8px 5px;
+        gap: 8px;
+    }
+}
