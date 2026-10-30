@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>leandro gorriado - Leandro vs Raúl el Caballo Ciego</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Press+Start+2P&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff477e;
+            --primary-dark: #d90429;
+            --accent: #fee440;
+            --pitch-dark: #1b4332;
+            --pitch-light: #2d6a4f;
+            --neon-blue: #00f5d4;
+            --dark-horse: #111115;
+            --gold: #ffbe0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background: linear-gradient(180deg, #09121d 0%, #162238 35%, #051a12 100%);
+            min-height: 100vh;
+            font-family: 'Outfit', sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-x: hidden;
+            padding: 10px 15px 35px;
+        }
+
+        /* HEADER OBLIGATORIO */
+        header {
+            text-align: center;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Bungee', cursive;
+            font-size: clamp(2.2rem, 5.5vw, 4rem);
+            color: #fee440;
+            text-shadow: 
+                4px 4px 0px #d90429,
+                8px 8px 0px #000,
+                0 0 30px rgba(254, 228, 64, 0.7);
+            letter-spacing: 2px;
+            text-transform: lowercase;
+            margin-bottom: 4px;
+            animation: pulseTitle 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseTitle {
+            0% { transform: scale(1) rotate(-1deg); }
+            100% { transform: scale(1.02) rotate(1deg); }
+        }
+
+        .subtitle {
+            font-size: clamp(0.9rem, 2vw, 1.15rem);
+            color: #a8dadc;
+            font-weight: 700;
+            text-shadow: 1px 1px 3px #000;
+            background: rgba(0, 0, 0, 0.55);
+            padding: 5px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        /* MARCADOR CON NOMBRES */
+        .scoreboard {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .score-card {
+            background: rgba(0, 0, 0, 0.75);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 8px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            min-width: 125px;
+        }
+
+        .score-card.highlight {
+            border-color: #fee440;
+            box-shadow: 0 0 15px rgba(254, 228, 64, 0.4);
+        }
+
+        .score-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ced4da;
+            font-weight: 800;
+        }
+
+        .score-val {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1.35rem;
+            color: #fff;
+            margin-top: 4px;
+        }
+
+        .score-card.goals .score-val { color: #52b788; }
+        .score-card.saves .score-val { color: #e63946; }
+        .score-card.streak .score-val { color: #fee440; }
+
+        /* CONTENEDOR DEL JUEGO */
+        .game-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 860px;
+            aspect-ratio: 16 / 10;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 
+                0 20px 45px rgba(0, 0, 0, 0.85),
+                0 0 0 4px #2b2d42;
+            background: #1b4332;
+        }
+
+        canvas#gameCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: crosshair;
+        }
+
+        /* OVERLAYS Y MENSAJES */
+        .banner-msg {
+            position: absolute;
+            top: 24%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-family: 'Bungee', cursive;
+            font-size: clamp(2.3rem, 5.5vw, 4.4rem);
+            color: #fee440;
+            text-shadow: 5px 5px 0 #d90429, 8px 8px 0 #000;
+            z-index: 50;
+            pointer-events: none;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .banner-msg.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .horse-speech {
+            position: absolute;
+            top: 14%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffffff;
+            color: #111;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            border: 3px solid #111;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            pointer-events: none;
+            z-index: 45;
+            text-align: center;
+            max-width: 320px;
+        }
+
+        .horse-speech::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px 8px 0;
+            border-style: solid;
+            border-color: #ffffff transparent;
+            display: block;
+            width: 0;
+        }
+
+        .horse-speech.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* BARRA DE POTENCIA DINÁMICA */
+        .power-bar-container {
+            position: absolute;
+            right: 25px;
+            bottom: 30px;
+            width: 28px;
+            height: 180px;
+            background: rgba(0, 0, 0, 0.65);
+            border: 3px solid #fff;
+            border-radius: 14px;
+            padding: 3px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 30;
+        }
+
+        .power-bar-fill {
+            width: 100%;
+            height: 0%;
+            border-radius: 8px;
+            background: linear-gradient(0deg, #52b788 0%, #fee440 60%, #e63946 100%);
+            transition: height 0.05s linear;
+        }
+
+        .power-bar-label {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: #fee440;
+            text-transform: uppercase;
+        }
+
+        /* PANEL DE MODOS DE DISPARO (EFECTOS) */
+        .shot-types-bar {
+            width: 100%;
+            max-width: 860px;
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .shot-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e1dd;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .shot-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #fee440;
+        }
+
+        .shot-btn.active {
+            background: linear-gradient(135deg, #fee440, #ffbe0b);
+            color: #111;
+            border-color: #fff;
+            font-weight: 900;
+            box-shadow: 0 0 12px rgba(254, 228, 64, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* RELATO COMENTARISTA */
+        .commentary-box {
+            width: 100%;
+            max-width: 860px;
+            background: rgba(13, 27, 42, 0.95);
+            border: 2px solid #3a506b;
+            border-radius: 12px;
+            margin-top: 10px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        .mic-icon {
+            font-size: 1.5rem;
+            animation: bounce 1.2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        .commentary-text {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #e0e1dd;
+            flex-grow: 1;
+        }
+
+        .commentary-speaker {
+            color: #fee440;
+            font-weight: 800;
+            margin-right: 6px;
+        }
+
+        /* CONTROLES INFERIORES */
+        .controls-panel {
+            width: 100%;
+            max-width: 860px;
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: #adb5bd;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff477e, #d90429);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(217, 4, 41, 0.4);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(217, 4, 41, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-techno {
+            background: linear-gradient(135deg, #7209b7, #3a0ca3);
+            box-shadow: 0 4px 10px rgba(114, 9, 183, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .btn-techno.active {
+            background: linear-gradient(135deg, #f72585, #7209b7);
+            box-shadow: 0 0 15px rgba(247, 37, 133, 0.7);
+        }
+
+        .btn-sound {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.4);
+        }
+
+        /* CONFETTI */
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="confettiCanvas"></canvas>
+
+    <header>
+        <h1>leandro gorriado</h1>
+        <div class="subtitle">⚽ Leandro el Cerdo Goleador vs. Raúl el Caballo Ciego 🐴🕶️</div>
+    </header>
+
+    <!-- Marcador -->
+    <div class="scoreboard">
+        <div class="score-card goals">
+            <span class="score-label">🐷 Leandro</span>
+            <span class="score-val" id="goalsVal">0</span>
+        </div>
+        <div class="score-card saves">
+            <span class="score-label">🐴 Raúl</span>
+            <span class="score-val" id="savesVal">0</span>
+        </div>
+        <div class="score-card streak">
+            <span class="score-label">🔥 Racha</span>
+            <span class="score-val" id="streakVal">0</span>
+        </div>
+        <div class="score-card highlight">
+            <span class="score-label">🎯 Tiros</span>
+            <span class="score-val" id="shotsVal">0</span>
+        </div>
+    </div>
+
+    <!-- Contenedor del Juego -->
+    <div class="game-wrapper" id="gameWrapper">
+        <canvas id="gameCanvas" width="900" height="560"></canvas>
+        
+        <!-- Barra de Potencia dinámica -->
+        <div class="power-bar-container">
+            <span class="power-bar-label">Fuerza</span>
+            <div class="power-bar-fill" id="powerBarFill"></div>
+        </div>
+
+        <div class="banner-msg" id="bannerMsg">¡GOLAZO!</div>
+        <div class="horse-speech" id="horseSpeech">¡SOY RAÚL Y NO VEO UN POMO!</div>
+    </div>
+
+    <!-- Selector de Tipo de Tiro / Chanfle -->
+    <div class="shot-types-bar">
+        <button class="shot-btn active" data-type="normal">⚽ Clásico Fuerte</button>
+        <button class="shot-btn" data-type="curva-izq">🌪️ Chanfle Izquierda</button>
+        <button class="shot-btn" data-type="curva-der">🌪️ Chanfle Derecha</button>
+        <button class="shot-btn" data-type="picadita">🥄 Picadita / Vaselina</button>
+        <button class="shot-btn" data-type="misil">🚀 Misil Imparable</button>
+    </div>
+
+    <!-- Comentarios de la transmisión -->
+    <div class="commentary-box">
+        <div class="mic-icon">🎙️</div>
+        <div class="commentary-text">
+            <span class="commentary-speaker">[RELATOR]:</span>
+            <span id="commentaryLine">¡Leandro el cerdo acomoda el balón frente a Raúl, el temible arquero ciego! ¡Música techno lista!</span>
+        </div>
+    </div>
+
+    <!-- Controles -->
+    <div class="controls-panel">
+        <div class="instructions">
+            <span>🎮 <strong>Controles:</strong> Mueve el mouse para apuntar. Mantén presionado para cargar fuerza y suelta para patear.</span>
+        </div>
+        <div class="action-btns">
+            <button class="btn btn-techno active" id="technoToggleBtn">🎧 Techno: ON</button>
+            <button class="btn btn-sound" id="soundToggleBtn">🔊 FX: Suave</button>
+            <button class="btn" id="resetBtn">🔄 Reiniciar</button>
+        </div>
+    </div>
+
+    <script>
+        /* ==============================================================
+           SISTEMA DE AUDIO: TECHNO LOOP + EFECTOS SUAVES
+           ============================================================== */
+        class AudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.sfxEnabled = true;
+                this.technoEnabled = true;
+                this.sfxMasterVolume = 0.22; // VOLUMEN BAJO PARA EFECTOS
+                this.technoVolume = 0.32;
+
+                this.step = 0;
+                this.technoInterval = null;
+                this.bpm = 130;
+                this.bassNotes = [55, 55, 65.41, 55, 73.42, 55, 82.41, 73.42]; // Línea de bajo tecno A1/C2/D2/E2
+                this.leadNotes = [220, 261.63, 293.66, 329.63, 392, 440];
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            /* --- MÚSICA TECHNO SINTETIZADA EN VIVO --- */
+            startTechno() {
+                this.init();
+                if (this.technoInterval) return;
+
+                const stepDuration = (60 / this.bpm) / 4; // 16th notes
+                this.technoInterval = setInterval(() => {
+                    if (!this.technoEnabled || !this.ctx) return;
+                    this.playTechnoStep(this.step);
+                    this.step = (this.step + 1) % 32;
+                }, stepDuration * 1000);
+            }
+
+            stopTechno() {
+                if (this.technoInterval) {
+                    clearInterval(this.technoInterval);
+                    this.technoInterval = null;
+                }
+            }
+
+            playTechnoStep(step) {
+                const now = this.ctx.currentTime;
+
+                // 1. KICK DRUM (4-on-the-floor en 0, 4, 8, 12, 16, 20, 24, 28)
+                if (step % 4 === 0) {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(130, now);
+                    osc.frequency.exponentialRampToValueAtTime(32, now + 0.12);
+
+                    gain.gain.setValueAtTime(this.technoVolume * 1.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.13);
+                }
+
+                // 2. OPEN HI-HAT A CONTRATIEMPO (en 2, 6, 10, 14, 18, 22, 26, 30)
+                if (step % 4 === 2) {
+                    this.playSynthHat(0.12, this.technoVolume * 0.45);
+                } else if (step % 2 === 1) {
+                    // Closed hat suave
+                    this.playSynthHat(0.04, this.technoVolume * 0.2);
+                }
+
+                // 3. LÍNEA DE BAJO TECHNO ROLLING (16th notes con filtro resonante)
+                const bassNote = this.bassNotes[step % this.bassNotes.length];
+                const bassOsc = this.ctx.createOscillator();
+                const bassFilter = this.ctx.createBiquadFilter();
+                const bassGain = this.ctx.createGain();
+
+                bassOsc.type = 'sawtooth';
+                bassOsc.frequency.setValueAtTime(bassNote, now);
+
+                bassFilter.type = 'lowpass';
+                // Modulación de filtro estilo ácid techno
+                const cutoff = 250 + Math.sin(step * 0.4) * 150;
+                bassFilter.frequency.setValueAtTime(cutoff, now);
+                bassFilter.Q.value = 4;
+
+                bassGain.gain.setValueAtTime(this.technoVolume * 0.4, now);
+                bassGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+                bassOsc.connect(bassFilter);
+                bassFilter.connect(bassGain);
+                bassGain.connect(this.ctx.destination);
+
+                bassOsc.start(now);
+                bassOsc.stop(now + 0.11);
+
+                // 4. SYNTH ARPEGGIO TECHNO (cada ciertos pasos)
+                if (step % 4 === 0 || step % 4 === 3) {
+                    const leadNote = this.leadNotes[(step * 2) % this.leadNotes.length];
+                    const leadOsc = this.ctx.createOscillator();
+                    const leadGain = this.ctx.createGain();
+
+                    leadOsc.type = 'square';
+                    leadOsc.frequency.setValueAtTime(leadNote, now);
+
+                    leadGain.gain.setValueAtTime(this.technoVolume * 0.15, now);
+                    leadGain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+                    leadOsc.connect(leadGain);
+                    leadGain.connect(this.ctx.destination);
+
+                    leadOsc.start(now);
+                    leadOsc.stop(now + 0.15);
+                }
+            }
+
+            playSynthHat(duration, vol) {
+                const bufferSize = this.ctx.sampleRate * duration;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.value = 6000;
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                noise.start();
+            }
+
+            /* --- EFECTOS DE SONIDO CON VOLUMEN SUAVE Y BAJO --- */
+            playKick() {
+                if (!this.sfxEnabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(110, now);
+                osc.frequency.exponentialRampToValueAtTime(28, now + 0.16);
+
+                gain.gain.setValueAtTime(this.sfxMasterVolume * 0.8, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.16);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.16);
+            }
+
+            playPigOink() {
+                if (!this.sfxEnabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(310, now);
+                osc.frequency.linearRampToValueAtTime(440, now + 0.08);
+                osc.frequency.linearRampToValueAtTime(260, now + 0.2);
+
+                gain.gain.setValueAtTime(this.sfxMasterVolume * 0.6, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.22);
+            }
+
+            playHorseWhinny() {
+                if (!this.sfxEnabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(380, now);
+                osc.frequency.linearRampToValueAtTime(740, now + 0.14);
+                osc.frequency.linearRampToValueAtTime(580, now + 0.28);
+                osc.frequency.linearRampToValueAtTime(800, now + 0.42);
+                osc.frequency.linearRampToValueAtTime(320, now + 0.62);
+
+                gain.gain.setValueAtTime(this.sfxMasterVolume * 0.55, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.65);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.65);
+            }
+
+            playPostHit() {
+                if (!this.sfxEnabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(920, now);
+                osc.frequency.exponentialRampToValueAtTime(220, now + 0.35);
+
+                gain.gain.setValueAtTime(this.sfxMasterVolume * 0.75, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.38);
+            }
+
+            playNetSwish() {
+                if (!this.sfxEnabled) return;
+                this.init();
+                this.playSynthHat(0.2, this.sfxMasterVolume * 0.6);
+            }
+
+            playGoalCheer() {
+                if (!this.sfxEnabled) return;
+                this.init();
+                const notes = [261.63, 329.63, 392.00, 523.25];
+                notes.forEach((freq, idx) => {
+                    const now = this.ctx.currentTime + idx * 0.08;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(this.sfxMasterVolume * 0.5, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.55);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.55);
+                });
+            }
+
+            playWhistle() {
+                if (!this.sfxEnabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(2000, now);
+                osc.frequency.setValueAtTime(2350, now + 0.06);
+                osc.frequency.setValueAtTime(2000, now + 0.12);
+
+                gain.gain.setValueAtTime(this.sfxMasterVolume * 0.45, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.22);
+            }
+        }
+
+        const audio = new AudioEngine();
+
+        // Autoplay al interactuar con cualquier parte de la pantalla
+        const startAudioOnFirstInteraction = () => {
+            audio.init();
+            audio.startTechno();
+            window.removeEventListener('click', startAudioOnFirstInteraction);
+            window.removeEventListener('keydown', startAudioOnFirstInteraction);
+            window.removeEventListener('touchstart', startAudioOnFirstInteraction);
+        };
+        window.addEventListener('click', startAudioOnFirstInteraction);
+        window.addEventListener('keydown', startAudioOnFirstInteraction);
+        window.addEventListener('touchstart', startAudioOnFirstInteraction);
+
+        /* ==============================================================
+           CONFETTI ENGINE
+           ============================================================== */
+        const confettiCanvas = document.getElementById('confettiCanvas');
+        const cCtx = confettiCanvas.getContext('2d');
+        let confettiParticles = [];
+
+        function resizeConfetti() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeConfetti);
+        resizeConfetti();
+
+        function launchConfetti() {
+            const colors = ['#fee440', '#ff477e', '#00bbf9', '#00f5d4', '#70e000', '#ffffff'];
+            for (let i = 0; i < 110; i++) {
+                confettiParticles.push({
+                    x: window.innerWidth / 2,
+                    y: window.innerHeight * 0.4,
+                    vx: (Math.random() - 0.5) * 20,
+                    vy: (Math.random() - 0.9) * 18,
+                    size: Math.random() * 8 + 6,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rot: Math.random() * 360,
+                    vRot: (Math.random() - 0.5) * 16,
+                    life: 1.0,
+                    decay: Math.random() * 0.014 + 0.009
+                });
+            }
+        }
+
+        function updateConfetti() {
+            cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            for (let i = confettiParticles.length - 1; i >= 0; i--) {
+                const p = confettiParticles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.42;
+                p.rot += p.vRot;
+                p.life -= p.decay;
+
+                if (p.life <= 0) {
+                    confettiParticles.splice(i, 1);
+                    continue;
+                }
+
+                cCtx.save();
+                cCtx.translate(p.x, p.y);
+                cCtx.rotate((p.rot * Math.PI) / 180);
+                cCtx.globalAlpha = p.life;
+                cCtx.fillStyle = p.color;
+                cCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                cCtx.restore();
+            }
+            requestAnimationFrame(updateConfetti);
+        }
+        updateConfetti();
+
+        /* ==============================================================
+           JUEGO PRINCIPAL: CANVAS 2D
+           ============================================================== */
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let goals = 0;
+        let saves = 0;
+        let shots = 0;
+        let streak = 0;
+        let currentShotType = 'normal';
+
+        const goalsVal = document.getElementById('goalsVal');
+        const savesVal = document.getElementById('savesVal');
+        const shotsVal = document.getElementById('shotsVal');
+        const streakVal = document.getElementById('streakVal');
+        const bannerMsg = document.getElementById('bannerMsg');
+        const horseSpeech = document.getElementById('horseSpeech');
+        const commentaryLine = document.getElementById('commentaryLine');
+        const technoToggleBtn = document.getElementById('technoToggleBtn');
+        const soundToggleBtn = document.getElementById('soundToggleBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const powerBarFill = document.getElementById('powerBarFill');
+        const shotBtns = document.querySelectorAll('.shot-btn');
+
+        let isChargingPower = false;
+        let powerValue = 0.5;
+        let powerDirection = 1;
+        let grassParticles = [];
+        let netRipple = 0;
+
+        const GOAL = {
+            x1: 220,
+            x2: 680,
+            yTop: 110,
+            yBottom: 250,
+            depth: 50
+        };
+
+        let ball = {
+            x: 450,
+            y: 470,
+            z: 0,
+            targetX: 450,
+            targetY: 180,
+            startX: 450,
+            startY: 470,
+            curveOffset: 0,
+            radius: 18,
+            rotation: 0,
+            active: false,
+            progress: 0,
+            speed: 0.026,
+            power: 0.6,
+            result: null
+        };
+
+        // Cerdo LEANDRO
+        let pig = {
+            name: "LEANDRO",
+            x: 375,
+            y: 470,
+            kickAnim: 0,
+            isKicking: false,
+            celebrating: false,
+            disappointed: false,
+            scale: 1.15
+        };
+
+        // Caballo RAÚL
+        let horse = {
+            name: "RAÚL",
+            x: 450,
+            y: 220,
+            targetX: 450,
+            vx: 0,
+            isDiving: false,
+            diveDirection: 0,
+            blindListenTilt: 0,
+            earsTwitch: 0,
+            coatColor: '#121216',
+            maneColor: '#070709',
+            stunned: false
+        };
+
+        let crosshair = {
+            x: 450,
+            y: 180,
+            visible: true
+        };
+
+        // Frases de Raúl el Caballo Ciego
+        const raulQuotes = [
+            "¡SOY RAÚL Y NO VEO UN POMO!",
+            "¡LEANDRO, ESCUCHO TUS PASOS!",
+            "¡RAÚL TIENE EL OÍDO AFINADO!",
+            "¡LEANDRO, TIRALA AL GALLINERO!",
+            "¡ALGUIEN QUE LE PRENDA LA LUZ A RAÚL!",
+            "¡RAÚL ATAJA POR PURA VIBRACIÓN!",
+            "¡NO VEO LA PELOTA PERO HUELO EL GOL!",
+            "¡LEANDRO, ESTA LA SACA RAÚL A CIEGAS!"
+        ];
+
+        // Frases del Relator
+        const relatorQuotes = {
+            goal: [
+                "¡GOOOLAZO DE LEANDRO! ¡Se la clavó al ángulo y dejó pagando a Raúl!",
+                "¡MONUMENTAL LEANDRO! ¡El chanchito goleador baila techno y Raúl sigue buscando el balón!",
+                "¡GOOOOOL! ¡Leandro la puso donde las arañas tejen y Raúl ni se enteró!",
+                "¡LEANDRO EN LLAMAS! ¡Qué zapatazo del porcino frente a un Raúl completamente a oscuras!"
+            ],
+            save: [
+                "¡PARADÓN DE RAÚL! ¡El caballo ciego escuchó el viento y metió un herradurazo milagroso!",
+                "¡NO SE PUEDE CREER! ¡Raúl se estiró a ciegas y le ahogó el grito de gol a Leandro!",
+                "¡ATAJADÓN DE RAÚL! ¡Puro instinto y oreja de potrero!",
+                "¡RAÚL ES UNA MURALLA OSCURA! Se quedó con el remate de Leandro."
+            ],
+            post: [
+                "¡TRAVESAÑOOOOO DE LEANDRO! ¡Hizo temblar los palos de Raúl!",
+                "¡EL POSTE SALVA A RAÚL! ¡Sonó el metal a ritmo techno!",
+                "¡LEANDRO CASI PARTE EL ARCO! ¡Raúl sintió el soplido en la venda!"
+            ],
+            miss: [
+                "¡AFUERA! ¡Leandro la mandó a la estratósfera!",
+                "¡DESVIADO! ¡Leandro le erró por tres cuadras y Raúl sonríe en las sombras!",
+                "¡LEANDRO SE APURÓ! ¡El remate se fue lejísimos!"
+            ]
+        };
+
+        shotBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                shotBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentShotType = btn.dataset.type;
+                audio.playWhistle();
+                setCommentary(`Leandro prepara: ${btn.textContent}`);
+            });
+        });
+
+        /* ==============================================================
+           DIBUJO DE ESCENARIO Y PERSONAJES
+           ============================================================== */
+        function drawStadium() {
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, 210);
+            skyGrad.addColorStop(0, '#070a12');
+            skyGrad.addColorStop(0.6, '#101a2e');
+            skyGrad.addColorStop(1, '#1b324d');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, canvas.width, 240);
+
+            // Tribunas
+            ctx.fillStyle = 'rgba(8, 12, 22, 0.85)';
+            ctx.fillRect(0, 70, canvas.width, 100);
+
+            // Reflectores
+            drawFloodlight(75, 40);
+            drawFloodlight(canvas.width - 75, 40);
+
+            // Luces de hinchada
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.18)';
+            for (let i = 0; i < 65; i++) {
+                const hx = (i * 26 + (Date.now() * 0.025) % 28) % canvas.width;
+                const hy = 78 + (i % 6) * 11;
+                ctx.beginPath();
+                ctx.arc(hx, hy, 2.2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Césped
+            const pitchGrad = ctx.createLinearGradient(0, 200, 0, canvas.height);
+            pitchGrad.addColorStop(0, '#19532d');
+            pitchGrad.addColorStop(1, '#0e3a1f');
+            ctx.fillStyle = pitchGrad;
+            ctx.fillRect(0, 200, canvas.width, canvas.height - 200);
+
+            // Franjas de corte
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+            for (let y = 200; y < canvas.height; y += 36) {
+                if (Math.floor((y - 200) / 36) % 2 === 0) {
+                    ctx.fillRect(0, y, canvas.width, 36);
+                }
+            }
+
+            // Líneas de cal
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(120, 250);
+            ctx.lineTo(780, 250);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(120, 250);
+            ctx.lineTo(30, canvas.height);
+            ctx.moveTo(780, 250);
+            ctx.lineTo(870, canvas.height);
+            ctx.stroke();
+
+            // Punto del penal
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.ellipse(450, 470, 7, 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawFloodlight(x, y) {
+            ctx.save();
+            ctx.fillStyle = '#fee440';
+            ctx.shadowColor = '#fee440';
+            ctx.shadowBlur = 28;
+            ctx.beginPath();
+            ctx.arc(x, y, 13, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(254, 228, 64, 0.08)';
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x - 170, canvas.height);
+            ctx.lineTo(x + 170, canvas.height);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawGoal() {
+            ctx.save();
+
+            const netWobble = Math.sin(netRipple * Math.PI) * 12;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.38)';
+            ctx.lineWidth = 1;
+
+            const netLines = 20;
+            for (let i = 0; i <= netLines; i++) {
+                const ratio = i / netLines;
+                const topX = GOAL.x1 + (GOAL.x2 - GOAL.x1) * ratio;
+                const bottomX = (GOAL.x1 - 18) + (GOAL.x2 - GOAL.x1 + 36) * ratio;
+
+                ctx.beginPath();
+                ctx.moveTo(topX, GOAL.yTop);
+                const midX = (topX + bottomX) / 2 + (ratio > 0.3 && ratio < 0.7 ? netWobble : 0);
+                ctx.quadraticCurveTo(midX, (GOAL.yTop + GOAL.yBottom) / 2, bottomX, GOAL.yBottom);
+                ctx.stroke();
+            }
+
+            for (let y = GOAL.yTop; y <= GOAL.yBottom; y += 14) {
+                ctx.beginPath();
+                ctx.moveTo(GOAL.x1 - 6, y);
+                ctx.lineTo(GOAL.x2 + 6, y);
+                ctx.stroke();
+            }
+
+            // Postes blancos
+            ctx.strokeStyle = '#f8f9fa';
+            ctx.lineWidth = 10;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+            ctx.shadowBlur = 12;
+
+            ctx.beginPath();
+            ctx.moveTo(GOAL.x1, GOAL.yBottom);
+            ctx.lineTo(GOAL.x1, GOAL.yTop);
+            ctx.lineTo(GOAL.x2, GOAL.yTop);
+            ctx.lineTo(GOAL.x2, GOAL.yBottom);
+            ctx.stroke();
+
+            // Reflejo
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(GOAL.x1 + 4, GOAL.yTop - 2);
+            ctx.lineTo(GOAL.x2 - 4, GOAL.yTop - 2);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        /* -------------------------------------------------------------
+           DIBUJAR AL CABALLO RAÚL (ARQUERO CIEGO)
+           ------------------------------------------------------------- */
+        function drawHorse() {
+            ctx.save();
+            ctx.translate(horse.x, horse.y);
+
+            // Sombra
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 38, 13, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            let tilt = 0;
+            let offsetY = 0;
+            if (horse.isDiving) {
+                tilt = horse.diveDirection * 0.48;
+                offsetY = -28;
+            } else {
+                tilt = Math.sin(Date.now() * 0.006) * 0.09;
+            }
+            ctx.rotate(tilt);
+            ctx.translate(0, offsetY);
+
+            // CARTEL CON NOMBRE: "RAÚL (Ciego)"
+            ctx.save();
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+            ctx.strokeStyle = '#e63946';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(-42, -172, 84, 20, 6);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = '#fee440';
+            ctx.font = 'bold 11px "Outfit", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('🐴 RAÚL', 0, -158);
+            ctx.restore();
+
+            // Camiseta naranja de arquero
+            ctx.fillStyle = '#ff7b00';
+            ctx.strokeStyle = '#050507';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(-25, -76, 50, 56, 10);
+            ctx.fill();
+            ctx.stroke();
+
+            // Número 1 en el pecho
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px "Bungee", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('1', 0, -42);
+
+            // Patas traseras / Pantalón
+            ctx.fillStyle = '#111116';
+            ctx.beginPath();
+            ctx.roundRect(-21, -22, 17, 25, 4);
+            ctx.roundRect(4, -22, 17, 25, 4);
+            ctx.fill();
+
+            // Herraduras de plata
+            ctx.fillStyle = '#adb5bd';
+            ctx.fillRect(-21, 2, 17, 5);
+            ctx.fillRect(4, 2, 17, 5);
+
+            // Cuello
+            ctx.fillStyle = horse.coatColor;
+            ctx.beginPath();
+            ctx.moveTo(-13, -76);
+            ctx.lineTo(-7, -106);
+            ctx.lineTo(17, -106);
+            ctx.lineTo(13, -76);
+            ctx.closePath();
+            ctx.fill();
+
+            // Crin negra
+            ctx.fillStyle = horse.maneColor;
+            ctx.beginPath();
+            ctx.moveTo(11, -116);
+            ctx.lineTo(28, -96);
+            ctx.lineTo(18, -76);
+            ctx.lineTo(9, -76);
+            ctx.closePath();
+            ctx.fill();
+
+            // Cabeza de Raúl
+            ctx.fillStyle = horse.coatColor;
+            ctx.beginPath();
+            ctx.ellipse(0, -114, 19, 26, 0.1, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Hocico
+            ctx.fillStyle = '#212529';
+            ctx.beginPath();
+            ctx.ellipse(0, -98, 14, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#050505';
+            ctx.beginPath();
+            ctx.arc(-5, -98, 2.5, 0, Math.PI * 2);
+            ctx.arc(5, -98, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Orejas que giran como radar
+            const earWiggle = Math.sin(Date.now() * 0.018) * 6;
+            ctx.fillStyle = horse.coatColor;
+            ctx.beginPath();
+            ctx.moveTo(-15, -132);
+            ctx.lineTo(-7 + earWiggle, -147);
+            ctx.lineTo(-2, -132);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(2, -132);
+            ctx.lineTo(7 - earWiggle, -147);
+            ctx.lineTo(15, -132);
+            ctx.fill();
+
+            // ¡VENDA ROJA DE CIEGO DE RAÚL!
+            ctx.fillStyle = '#e63946';
+            ctx.strokeStyle = '#9b111e';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(-21, -126, 42, 15, 4);
+            ctx.fill();
+            ctx.stroke();
+
+            // Ojos con "X" en la venda
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'center';
+            if (horse.stunned) {
+                ctx.fillText('💫', 0, -114);
+            } else {
+                ctx.fillText('❌', -10, -114);
+                ctx.fillText('❌', 10, -114);
+            }
+
+            // Guantes amarillos
+            const gloveL = { x: -40 + (horse.diveDirection < 0 ? -16 : 0), y: -66 + (horse.isDiving ? -26 : 0) };
+            const gloveR = { x: 40 + (horse.diveDirection > 0 ? 16 : 0), y: -66 + (horse.isDiving ? -26 : 0) };
+
+            ctx.fillStyle = '#fee440';
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.arc(gloveL.x, gloveL.y, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(gloveR.x, gloveR.y, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        /* -------------------------------------------------------------
+           DIBUJAR AL CERDO LEANDRO (PATEADOR)
+           ------------------------------------------------------------- */
+        function drawPig() {
+            ctx.save();
+            ctx.translate(pig.x, pig.y);
+            ctx.scale(pig.scale, pig.scale);
+
+            // Sombra
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.beginPath();
+            ctx.ellipse(0, 10, 32, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            let kickOffset = 0;
+            let kickLegAngle = 0;
+            if (pig.isKicking) {
+                kickOffset = Math.sin(pig.kickAnim * Math.PI) * -9;
+                kickLegAngle = Math.sin(pig.kickAnim * Math.PI) * 0.95;
+            }
+
+            let bounceY = 0;
+            if (pig.celebrating) {
+                bounceY = Math.abs(Math.sin(Date.now() * 0.012)) * -18;
+            }
+            ctx.translate(0, bounceY);
+
+            // CARTEL CON NOMBRE: "LEANDRO"
+            ctx.save();
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+            ctx.strokeStyle = '#00f5d4';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(-42, -120 + kickOffset, 84, 19, 6);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = '#00f5d4';
+            ctx.font = 'bold 11px "Outfit", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('🐷 LEANDRO', 0, -106 + kickOffset);
+            ctx.restore();
+
+            // Cuerpo del cerdo Leandro
+            ctx.fillStyle = '#ff99c8';
+            ctx.strokeStyle = '#d94f86';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.ellipse(0, -32 + kickOffset, 30, 26, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Camiseta de fútbol
+            ctx.fillStyle = '#0077b6';
+            ctx.beginPath();
+            ctx.ellipse(0, -30 + kickOffset, 28, 22, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Número 9 y nombre en camiseta
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 14px "Bungee", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('9', 0, -26 + kickOffset);
+
+            // Cabeza
+            ctx.fillStyle = '#ffb3d9';
+            ctx.beginPath();
+            ctx.arc(0, -62 + kickOffset, 22, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Orejas
+            ctx.fillStyle = '#ff85b3';
+            ctx.beginPath();
+            ctx.moveTo(-14, -80 + kickOffset);
+            ctx.lineTo(-25, -95 + kickOffset);
+            ctx.lineTo(-5, -83 + kickOffset);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(14, -80 + kickOffset);
+            ctx.lineTo(25, -95 + kickOffset);
+            ctx.lineTo(5, -83 + kickOffset);
+            ctx.fill();
+
+            // Ojos
+            ctx.fillStyle = '#212529';
+            if (pig.celebrating) {
+                ctx.strokeStyle = '#212529';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.arc(-8, -66 + kickOffset, 5, Math.PI, 0);
+                ctx.arc(8, -66 + kickOffset, 5, Math.PI, 0);
+                ctx.stroke();
+            } else if (pig.disappointed) {
+                ctx.font = '12px sans-serif';
+                ctx.fillText('•', -8, -65 + kickOffset);
+                ctx.fillText('•', 8, -65 + kickOffset);
+            } else {
+                ctx.beginPath();
+                ctx.arc(-7, -66 + kickOffset, 3.5, 0, Math.PI * 2);
+                ctx.arc(7, -66 + kickOffset, 3.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(-8, -67 + kickOffset, 1.2, 0, Math.PI * 2);
+                ctx.arc(6, -67 + kickOffset, 1.2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Hocico
+            ctx.fillStyle = '#ff6392';
+            ctx.strokeStyle = '#c9184a';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.ellipse(0, -53 + kickOffset, 11, 7.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Fosas nasales
+            ctx.fillStyle = '#800f2f';
+            ctx.beginPath();
+            ctx.arc(-4, -53 + kickOffset, 2.2, 0, Math.PI * 2);
+            ctx.arc(4, -53 + kickOffset, 2.2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pata izquierda
+            ctx.fillStyle = '#ff99c8';
+            ctx.fillRect(-18, -12, 10, 18);
+            ctx.fillStyle = '#111';
+            ctx.beginPath();
+            ctx.roundRect(-22, 4, 15, 8, 3);
+            ctx.fill();
+
+            // Pata derecha (kicker)
+            ctx.save();
+            ctx.translate(14, -8);
+            ctx.rotate(kickLegAngle);
+            ctx.fillStyle = '#ff99c8';
+            ctx.fillRect(-5, -4, 10, 20);
+            ctx.fillStyle = '#ffbe0b';
+            ctx.beginPath();
+            ctx.roundRect(-6, 12, 17, 9, 3);
+            ctx.fill();
+            ctx.restore();
+
+            // Cola rizada
+            ctx.strokeStyle = '#ff6392';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(-28, -25);
+            ctx.quadraticCurveTo(-40, -35, -34, -45);
+            ctx.quadraticCurveTo(-26, -40, -32, -32);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        /* -------------------------------------------------------------
+           DIBUJAR LA PELOTA DE FÚTBOL
+           ------------------------------------------------------------- */
+        function drawBall() {
+            const currentRadius = ball.radius * (1 - ball.z * 0.52);
+            const shadowY = ball.startY + (GOAL.yBottom - ball.startY) * ball.z;
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.beginPath();
+            ctx.ellipse(ball.x, shadowY + currentRadius * 0.4, currentRadius * 1.1, currentRadius * 0.4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.save();
+            ctx.translate(ball.x, ball.y);
+            ctx.rotate(ball.rotation);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#2b2d42';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(0, 0, currentRadius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#111116';
+            ctx.beginPath();
+            ctx.arc(0, 0, currentRadius * 0.38, 0, Math.PI * 2);
+            ctx.fill();
+
+            for (let a = 0; a < Math.PI * 2; a += (Math.PI * 2) / 4) {
+                const px = Math.cos(a) * currentRadius * 0.72;
+                const py = Math.sin(a) * currentRadius * 0.72;
+                ctx.beginPath();
+                ctx.arc(px, py, currentRadius * 0.22, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            const grad = ctx.createRadialGradient(-currentRadius * 0.3, -currentRadius * 0.3, 1, 0, 0, currentRadius);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0.65)');
+            grad.addColorStop(0.7, 'rgba(255, 255, 255, 0)');
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0.38)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(0, 0, currentRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawCrosshair() {
+            if (ball.active) return;
+
+            ctx.save();
+            ctx.translate(crosshair.x, crosshair.y);
+
+            ctx.strokeStyle = '#fee440';
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash([6, 6]);
+            ctx.beginPath();
+            ctx.arc(0, 0, 24, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.setLineDash([]);
+            ctx.strokeStyle = '#d90429';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-15, 0); ctx.lineTo(15, 0);
+            ctx.moveTo(0, -15); ctx.lineTo(0, 15);
+            ctx.stroke();
+
+            ctx.fillStyle = '#fee440';
+            ctx.beginPath();
+            ctx.arc(0, 0, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function createGrassBurst(x, y) {
+            for (let i = 0; i < 16; i++) {
+                grassParticles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 1) * 7,
+                    size: Math.random() * 4 + 2,
+                    color: Math.random() > 0.5 ? '#52b788' : '#74c69d',
+                    life: 1.0
+                });
+            }
+        }
+
+        function updateGrass() {
+            for (let i = grassParticles.length - 1; i >= 0; i--) {
+                const gp = grassParticles[i];
+                gp.x += gp.vx;
+                gp.y += gp.vy;
+                gp.vy += 0.3;
+                gp.life -= 0.04;
+                if (gp.life <= 0) {
+                    grassParticles.splice(i, 1);
+                    continue;
+                }
+                ctx.fillStyle = gp.color;
+                ctx.globalAlpha = gp.life;
+                ctx.fillRect(gp.x, gp.y, gp.size, gp.size);
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        /* ==============================================================
+           LÓGICA DEL DISPARO Y RAÚL
+           ============================================================== */
+        function triggerShot(targetX, targetY, power) {
+            if (ball.active) return;
+
+            audio.playWhistle();
+            setTimeout(() => audio.playKick(), 75);
+
+            pig.isKicking = true;
+            pig.kickAnim = 0;
+            pig.celebrating = false;
+            pig.disappointed = false;
+            horse.stunned = false;
+
+            createGrassBurst(ball.x, ball.y);
+
+            ball.active = true;
+            ball.progress = 0;
+            ball.startX = ball.x;
+            ball.startY = ball.y;
+            ball.targetX = targetX;
+            ball.targetY = targetY;
+            ball.power = power;
+
+            if (currentShotType === 'curva-izq') {
+                ball.curveOffset = -70;
+                ball.speed = 0.024;
+            } else if (currentShotType === 'curva-der') {
+                ball.curveOffset = 70;
+                ball.speed = 0.024;
+            } else if (currentShotType === 'picadita') {
+                ball.curveOffset = 0;
+                ball.speed = 0.018;
+            } else if (currentShotType === 'misil') {
+                ball.curveOffset = 0;
+                ball.speed = 0.042;
+            } else {
+                ball.curveOffset = 0;
+                ball.speed = 0.022 + power * 0.015;
+            }
+
+            shots++;
+            shotsVal.textContent = shots;
+
+            horse.isDiving = true;
+            const audioClue = Math.random();
+            let chosenDiveX = 450;
+            let diveDir = 0;
+
+            if (currentShotType === 'misil') {
+                chosenDiveX = targetX > 450 ? 300 : 600;
+                diveDir = targetX > 450 ? -1 : 1;
+            } else if (audioClue < 0.40) {
+                chosenDiveX = targetX + (Math.random() - 0.5) * 85;
+                diveDir = targetX > 450 ? 1 : -1;
+            } else if (audioClue < 0.75) {
+                chosenDiveX = targetX > 450 ? 290 : 610;
+                diveDir = targetX > 450 ? -1 : 1;
+            } else {
+                chosenDiveX = 450;
+                diveDir = 0;
+            }
+
+            horse.targetX = Math.max(GOAL.x1 + 30, Math.min(GOAL.x2 - 30, chosenDiveX));
+            horse.diveDirection = diveDir;
+
+            const quote = raulQuotes[Math.floor(Math.random() * raulQuotes.length)];
+            showHorseSpeech(quote);
+            setTimeout(() => audio.playHorseWhinny(), 220);
+        }
+
+        function checkCollision() {
+            const inGoalX = ball.x >= GOAL.x1 && ball.x <= GOAL.x2;
+            const inGoalY = ball.y >= GOAL.yTop && ball.y <= GOAL.yBottom;
+
+            const hitCrossbar = Math.abs(ball.y - GOAL.yTop) < 16 && inGoalX;
+            const hitPost = (Math.abs(ball.x - GOAL.x1) < 16 || Math.abs(ball.x - GOAL.x2) < 16) && inGoalY;
+
+            const horseDistX = Math.abs(ball.x - horse.x);
+            const horseDistY = Math.abs(ball.y - (horse.y - 65));
+            const horseSaved = horseDistX < 48 && horseDistY < 55;
+
+            if (hitCrossbar || hitPost) {
+                ball.result = 'post';
+                handlePost();
+            } else if (inGoalX && inGoalY) {
+                if (horseSaved) {
+                    ball.result = 'saved';
+                    handleSave();
+                } else {
+                    ball.result = 'goal';
+                    handleGoal();
+                }
+            } else {
+                ball.result = 'miss';
+                handleMiss();
+            }
+        }
+
+        function handleGoal() {
+            goals++;
+            streak++;
+            goalsVal.textContent = goals;
+            streakVal.textContent = streak;
+
+            netRipple = 1.0;
+            audio.playNetSwish();
+            audio.playGoalCheer();
+            audio.playPigOink();
+            launchConfetti();
+
+            pig.celebrating = true;
+            showBanner('¡GOLAZO DE LEANDRO!', '#fee440');
+            setCommentary(relatorQuotes.goal[Math.floor(Math.random() * relatorQuotes.goal.length)]);
+
+            setTimeout(resetShot, 2500);
+        }
+
+        function handleSave() {
+            saves++;
+            streak = 0;
+            savesVal.textContent = saves;
+            streakVal.textContent = streak;
+
+            audio.playHorseWhinny();
+            pig.disappointed = true;
+            horse.stunned = true;
+            showBanner('¡ATAJÓ RAÚL!', '#e63946');
+            setCommentary(relatorQuotes.save[Math.floor(Math.random() * relatorQuotes.save.length)]);
+
+            setTimeout(resetShot, 2500);
+        }
+
+        function handlePost() {
+            streak = 0;
+            streakVal.textContent = streak;
+
+            audio.playPostHit();
+            showBanner('¡TRAVESAÑO!', '#ffbe0b');
+            setCommentary(relatorQuotes.post[Math.floor(Math.random() * relatorQuotes.post.length)]);
+
+            setTimeout(resetShot, 2500);
+        }
+
+        function handleMiss() {
+            streak = 0;
+            streakVal.textContent = streak;
+
+            showBanner('¡AFUERA!', '#adb5bd');
+            setCommentary(relatorQuotes.miss[Math.floor(Math.random() * relatorQuotes.miss.length)]);
+
+            setTimeout(resetShot, 2500);
+        }
+
+        function showBanner(text, color) {
+            bannerMsg.textContent = text;
+            bannerMsg.style.color = color;
+            bannerMsg.classList.add('show');
+            setTimeout(() => {
+                bannerMsg.classList.remove('show');
+            }, 1800);
+        }
+
+        function showHorseSpeech(text) {
+            horseSpeech.textContent = text;
+            horseSpeech.classList.add('show');
+            setTimeout(() => {
+                horseSpeech.classList.remove('show');
+            }, 2200);
+        }
+
+        function setCommentary(line) {
+            commentaryLine.textContent = line;
+        }
+
+        function resetShot() {
+            ball.x = 450;
+            ball.y = 470;
+            ball.z = 0;
+            ball.rotation = 0;
+            ball.active = false;
+            ball.progress = 0;
+            ball.curveOffset = 0;
+            ball.result = null;
+
+            pig.isKicking = false;
+            pig.celebrating = false;
+            pig.disappointed = false;
+
+            horse.isDiving = false;
+            horse.diveDirection = 0;
+            horse.targetX = 450;
+            horse.stunned = false;
+        }
+
+        /* ==============================================================
+           BUCLE DE JUEGO
+           ============================================================== */
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (isChargingPower) {
+                powerValue += 0.02 * powerDirection;
+                if (powerValue >= 1.0) {
+                    powerValue = 1.0;
+                    powerDirection = -1;
+                } else if (powerValue <= 0.2) {
+                    powerValue = 0.2;
+                    powerDirection = 1;
+                }
+                powerBarFill.style.height = `${(powerValue * 100)}%`;
+            }
+
+            if (netRipple > 0) {
+                netRipple -= 0.02;
+            }
+
+            if (pig.isKicking && pig.kickAnim < 1) {
+                pig.kickAnim += 0.08;
+            }
+
+            if (ball.active) {
+                ball.progress += ball.speed;
+                ball.z = Math.min(1, ball.progress);
+
+                const lateralCurve = Math.sin(ball.z * Math.PI) * ball.curveOffset;
+                ball.x = ball.startX + (ball.targetX - ball.startX) * ball.z + lateralCurve;
+
+                const arcHeight = (currentShotType === 'picadita' ? 75 : 46) * Math.sin(ball.z * Math.PI);
+                const straightY = ball.startY + (ball.targetY - ball.startY) * ball.z;
+                ball.y = straightY - arcHeight;
+
+                ball.rotation += 0.28;
+                horse.x += (horse.targetX - horse.x) * 0.12;
+
+                if (ball.progress >= 1 && !ball.result) {
+                    checkCollision();
+                }
+            } else {
+                horse.x += (450 + Math.sin(Date.now() * 0.0028) * 35 - horse.x) * 0.05;
+            }
+
+            drawStadium();
+            drawGoal();
+            drawHorse(); // Raúl
+            drawBall();
+            drawPig();   // Leandro
+            updateGrass();
+            drawCrosshair();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        /* ==============================================================
+           EVENTOS DE CONTROL
+           ============================================================== */
+        function getCanvasCoords(evt) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            const clientX = evt.clientX || (evt.touches && evt.touches[0].clientX);
+            const clientY = evt.clientY || (evt.touches && evt.touches[0].clientY);
+
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
+
+        canvas.addEventListener('mousemove', (e) => {
+            const pos = getCanvasCoords(e);
+            crosshair.x = Math.max(GOAL.x1 - 30, Math.min(GOAL.x2 + 30, pos.x));
+            crosshair.y = Math.max(GOAL.yTop - 25, Math.min(GOAL.yBottom + 20, pos.y));
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (ball.active) return;
+            audio.init();
+            isChargingPower = true;
+            powerValue = 0.3;
+            powerDirection = 1;
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if (isChargingPower && !ball.active) {
+                isChargingPower = false;
+                triggerShot(crosshair.x, crosshair.y, powerValue);
+            }
+        });
+
+        canvas.addEventListener('touchstart', (e) => {
+            if (ball.active) return;
+            audio.init();
+            const pos = getCanvasCoords(e);
+            crosshair.x = Math.max(GOAL.x1 - 30, Math.min(GOAL.x2 + 30, pos.x));
+            crosshair.y = Math.max(GOAL.yTop - 25, Math.min(GOAL.yBottom + 20, pos.y));
+            isChargingPower = true;
+            powerValue = 0.3;
+            powerDirection = 1;
+        }, { passive: true });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const pos = getCanvasCoords(e);
+            crosshair.x = Math.max(GOAL.x1 - 30, Math.min(GOAL.x2 + 30, pos.x));
+            crosshair.y = Math.max(GOAL.yTop - 25, Math.min(GOAL.yBottom + 20, pos.y));
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', (e) => {
+            if (isChargingPower && !ball.active) {
+                isChargingPower = false;
+                triggerShot(crosshair.x, crosshair.y, powerValue);
+            }
+        });
+
+        // Toggle Música Techno
+        technoToggleBtn.addEventListener('click', () => {
+            audio.init();
+            audio.technoEnabled = !audio.technoEnabled;
+            if (audio.technoEnabled) {
+                audio.startTechno();
+                technoToggleBtn.textContent = '🎧 Techno: ON';
+                technoToggleBtn.classList.add('active');
+            } else {
+                technoToggleBtn.textContent = '🎧 Techno: OFF';
+                technoToggleBtn.classList.remove('active');
+            }
+        });
+
+        // Toggle Efectos
+        soundToggleBtn.addEventListener('click', () => {
+            audio.sfxEnabled = !audio.sfxEnabled;
+            soundToggleBtn.textContent = audio.sfxEnabled ? '🔊 FX: Suave' : '🔇 FX: OFF';
+            if (audio.sfxEnabled) audio.playWhistle();
+        });
+
+        resetBtn.addEventListener('click', () => {
+            goals = 0;
+            saves = 0;
+            shots = 0;
+            streak = 0;
+            goalsVal.textContent = '0';
+            savesVal.textContent = '0';
+            shotsVal.textContent = '0';
+            streakVal.textContent = '0';
+            resetShot();
+            setCommentary('¡Partido reiniciado! Leandro se prepara frente a Raúl.');
+            audio.playWhistle();
+        });
+
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>
